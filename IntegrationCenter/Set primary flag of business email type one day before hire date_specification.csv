@@ -1,1 +1,35 @@
+Integration Name,Set primary flag of business email type one day before hire date
+Version,19
+Description,This flow toggles the primary flag of the business email type to primary and the non-business email type to not primary.
+This flow is needed when Active Directories write back the business email into SuccessFactors and cannot toggle the primary flag.
+Starting Entity,PerEmail
+Selected Fields,"emailType,personIdExternal,emailAddress,isPrimary"
+Joined Entities,
+Filter,"personNav/employmentNav/startDate eq datetime'<date,NOW,-,1,D>'"
+Sort Order,
 
+Format,ODATAV2
+Delimiter,
+Header Type,NONE
+Footer Type,NONE
+
+Schedule,The integration is not scheduled.
+
+
+Field Number,Field Label,Description,SF Entity,SF Field,Default Value,Association,Data Type,Format,Value Lookup Table,Calculation,Maximum Length,Minimum Length,Mandatory
+
+Body Fields
+1,Email Information (PerEmail)/emailType,,Email Information (PerEmail),Email Type (emailType),,emailType,Edm.String,,,,38,0,true
+2,Email Information (PerEmail)/personIdExternal,,Email Information (PerEmail),Person ID External (personIdExternal),,personIdExternal,Edm.String,,,,100,0,true
+3,Email Information (PerEmail)/emailAddress,,Email Information (PerEmail),Email Address (emailAddress),,emailAddress,Edm.String,,,,100,0,false
+4,Email Information (PerEmail)/isPrimary,,Email Information (PerEmail),,,,Edm.Boolean,,,If/Then/Else [Is Primary (isPrimary) from Email Information (PerEmail)] is equal to false 
+,,,,,,,,,,,If/Then [Email Type (emailType) from Email Information (PerEmail)] is equal to 8448 
+,,,,,,,,,,,,Field Value = true 
+,,,,,,,,,,Else
+,,,,,,,,,,,If/Then [Email Type (emailType) from Email Information (PerEmail)] is not equal to 8448 
+,,,,,,,,,,,,Field Value = false 
+,,,,,,,,,,,,0,false
+5,Email Information (PerEmail)/operation,,Email Information (PerEmail),,,,Edm.String,,,,,0,false
+
+
+OData Query URL:,"/odata/v2/PerEmail?$select=emailType,personIdExternal,emailAddress,isPrimary&$filter=personNav/employmentNav/startDate eq datetime'<date,NOW,-,1,D>'"
