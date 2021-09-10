@@ -1,0 +1,532 @@
+{
+	"info": {
+		"_postman_id": "495774ad-7d21-4849-ad1c-9b81fee177cb",
+		"name": "CATechEd2021",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "oAuth with SAML Bearer Assertion",
+			"item": [
+				{
+					"name": "generate oAuth SAML assertion",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setEnvironmentVariable(\"sf_oAuth_SAML_assertion\", responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{sf_oAuth_api_key}}",
+									"type": "text"
+								},
+								{
+									"key": "private_key",
+									"value": "{{sf_oAuth_private_key}}",
+									"type": "text"
+								},
+								{
+									"key": "user_id",
+									"value": "{{sf_oAuth_user_id}}",
+									"type": "text"
+								},
+								{
+									"key": "token_url",
+									"value": "{{sf_oAuth_token_url}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{sf_oAuth_domain}}/oauth/idp",
+							"host": [
+								"{{sf_oAuth_domain}}"
+							],
+							"path": [
+								"oauth",
+								"idp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "request oAuth access token with SAML assertion",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse( responseBody );\r",
+									"postman.setEnvironmentVariable(\"sf_oAuth_access_token\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "company_id",
+									"value": "{{sf_company}}",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{sf_oAuth_api_key}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "urn:ietf:params:oauth:grant-type:saml2-bearer",
+									"type": "text"
+								},
+								{
+									"key": "assertion",
+									"value": "{{sf_oAuth_SAML_assertion}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{sf_oAuth_domain}}/oauth/token",
+							"host": [
+								"{{sf_oAuth_domain}}"
+							],
+							"path": [
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SOAP API Login with oAuth Access Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = xml2Json( responseBody );\r",
+									"postman.setEnvironmentVariable(\"sf_jd_session_id\", JSON.sessionId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{sf_oAuth_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/soap+xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:urn=\"urn:sfobject.sfapi.successfactors.com\">\r\n   <soapenv:Header/>\r\n   <soapenv:Body>\r\n      <urn:login>\r\n         <urn:credential>\r\n            <urn:companyId></urn:companyId>\r\n            <urn:username></urn:username>\r\n            <urn:password></urn:password>\r\n         </urn:credential>\r\n      </urn:login>\r\n   </soapenv:Body>\r\n</soapenv:Envelope>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sf_api_soap_domain}}12",
+							"host": [
+								"{{sf_api_soap_domain}}12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SOAP UI Query CE API Fullmode Copy",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/soap+xml",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "JSESSIONID={{sf_jd_session_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:urn=\"urn:sfobject.sfapi.successfactors.com\">\r\n   <soapenv:Header/>\r\n   <soapenv:Body>\r\n      <urn:query>\r\n         <urn:queryString>\r\n            select person\r\n\t\t\t\t ,personal_information\r\n\t\t\t\t ,address_information\r\n\t\t\t\t ,employment_information \r\n\t\t\t\t ,job_information\r\n\t\t\t\t ,compensation_information\r\n\t\t\t\t ,paycompensation_recurring\r\n\t\t\t\t ,paycompensation_non_recurring \r\n\t\t\t\t ,national_id_card\t\t\t\t \r\n\t\t\t\t ,email_information \r\n\t\t\t\t ,phone_information\r\n\t\t\t\t ,person_relation \r\n\t\t\t\t ,job_relation\r\n\t\t\t\t ,global_assignment_information \r\n\t\t\tfrom\tCompoundEmployee\r\n\t\t\twhere\t\tperson_id_external = '{{sf_demo_employee_person_id_external}}'\r\n         </urn:queryString>\r\n    \r\n         <urn:param>\r\n            <urn:name>maxRows</urn:name>\r\n            <urn:value>1</urn:value>\r\n         </urn:param>\r\n      </urn:query>\r\n   </soapenv:Body>\r\n</soapenv:Envelope>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sf_api_soap_domain}}12",
+							"host": [
+								"{{sf_api_soap_domain}}12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User with oAuth Access Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{sf_oAuth_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{sf_api_odata_domain}}User?$top=1&$format=JSON",
+							"host": [
+								"{{sf_api_odata_domain}}User"
+							],
+							"query": [
+								{
+									"key": "$top",
+									"value": "1"
+								},
+								{
+									"key": "$format",
+									"value": "JSON"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Basic Authentication with username and password",
+			"item": [
+				{
+					"name": "SOAP API Login with Basic Authentication using credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = xml2Json( responseBody );\r",
+									"var sessionId=jsonData[\"S:Envelope\"][\"S:Body\"][\"loginResponse\"][\"result\"][\"sessionId\"];\r",
+									"\r",
+									"postman.setEnvironmentVariable(\"sf_jd_session_id\", sessionId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/soap+xml",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:urn=\"urn:sfobject.sfapi.successfactors.com\">\r\n   <soapenv:Header/>\r\n   <soapenv:Body>\r\n      <urn:login>\r\n         <urn:credential>\r\n            <urn:companyId>{{sf_company}}</urn:companyId>\r\n            <urn:username>{{sf_username}}</urn:username>\r\n            <urn:password>{{sf_password}}</urn:password>\r\n         </urn:credential>\r\n      </urn:login>\r\n   </soapenv:Body>\r\n</soapenv:Envelope>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sf_api_soap_domain}}12",
+							"host": [
+								"{{sf_api_soap_domain}}12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SOAP UI Query CE API Fullmode",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/soap+xml",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "JSESSIONID={{sf_jd_session_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:urn=\"urn:sfobject.sfapi.successfactors.com\">\r\n   <soapenv:Header/>\r\n   <soapenv:Body>\r\n      <urn:query>\r\n         <urn:queryString>\r\n            select person\r\n\t\t\t\t ,personal_information\r\n\t\t\t\t ,address_information\r\n\t\t\t\t ,employment_information \r\n\t\t\t\t ,job_information\r\n\t\t\t\t ,compensation_information\r\n\t\t\t\t ,paycompensation_recurring\r\n\t\t\t\t ,paycompensation_non_recurring \r\n\t\t\t\t ,national_id_card\t\t\t\t \r\n\t\t\t\t ,email_information \r\n\t\t\t\t ,phone_information\r\n\t\t\t\t ,person_relation \r\n\t\t\t\t ,job_relation\r\n\t\t\t\t ,global_assignment_information \r\n\t\t\tfrom\tCompoundEmployee\r\n\t\t\twhere\t\tperson_id_external = '{{sf_demo_employee_person_id_external}}'\r\n         </urn:queryString>\r\n    \r\n         <urn:param>\r\n            <urn:name>maxRows</urn:name>\r\n            <urn:value>1</urn:value>\r\n         </urn:param>\r\n      </urn:query>\r\n   </soapenv:Body>\r\n</soapenv:Envelope>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sf_api_soap_domain}}12",
+							"host": [
+								"{{sf_api_soap_domain}}12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User with Basic Authentication using credentials",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{sf_username}}@{{sf_company}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{sf_password}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{sf_api_odata_domain}}User?$top=1&$format=JSON",
+							"host": [
+								"{{sf_api_odata_domain}}User"
+							],
+							"query": [
+								{
+									"key": "$top",
+									"value": "1"
+								},
+								{
+									"key": "$format",
+									"value": "JSON"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sender based trigger of Integration Flow",
+			"item": [
+				{
+					"name": "Fetch Token X-CSRF Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setEnvironmentVariable(\"sci_x_csrf_token\",postman.getResponseHeader(\"x-csrf-token\") );"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{sci_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{sci_username}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRF-Token",
+								"value": "Fetch",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "text/xml",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://sfcoecpi.it-cpitrial02-rt.cfapps.eu10-001.hana.ondemand.com/http/triggerExecution",
+							"protocol": "https",
+							"host": [
+								"sfcoecpi",
+								"it-cpitrial02-rt",
+								"cfapps",
+								"eu10-001",
+								"hana",
+								"ondemand",
+								"com"
+							],
+							"path": [
+								"http",
+								"triggerExecution"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Trigger CPI Flow with X-CSRF Token",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{sci_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{sci_username}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRF-Token",
+								"value": "{{sci_x_csrf_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "text/xml",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://sfcoecpi.it-cpitrial02-rt.cfapps.eu10-001.hana.ondemand.com/http/triggerExecution",
+							"protocol": "https",
+							"host": [
+								"sfcoecpi",
+								"it-cpitrial02-rt",
+								"cfapps",
+								"eu10-001",
+								"hana",
+								"ondemand",
+								"com"
+							],
+							"path": [
+								"http",
+								"triggerExecution"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
