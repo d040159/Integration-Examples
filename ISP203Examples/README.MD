@@ -11,7 +11,7 @@ The following scenarios are supported in Postman in the provided collection and 
 The following secenarios are supported by the provided integration flow in SAP Cloud Integration Suite: 
 * Calling SAP SuccessFactors SOAP and OData APIs using oAuth2 with SAML Bearer Assertion
 
-# Postman collection and Environment
+# Configure Postman collection and environment
 
 ## Step 1
 Download and install Postman v8.10.0 or later
@@ -23,6 +23,13 @@ Download the environment file and the collection file to your computer
 Import the environment file and the collection into your postman
 
 ## Step 4
-Provide values for all variable in the environment which are marked with entries in brackets like this one: <your SAP SuccessFactors API username>
-![Environment Hints](./Images/EnvironmentHints.jpg)
+Provide values for all variable in the environment which are marked with entries in brackets a value for the current value:
+![Environment Hints](./Images/EnvironmentHints.JPG)
+
+# Run Postman collection
+
+## Scenario 1: Calling SAP SuccessFactors OData APIs using oAuth2 with SAML Bearer Assertion
+### Step 1:
+
+
 # SAP Cloud Integration Flow
