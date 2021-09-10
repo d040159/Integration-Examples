@@ -161,7 +161,9 @@
 							"script": {
 								"exec": [
 									"var jsonData = xml2Json( responseBody );\r",
-									"postman.setEnvironmentVariable(\"sf_jd_session_id\", JSON.sessionId);"
+									"var sessionId=jsonData[\"S:Envelope\"][\"S:Body\"][\"loginResponse\"][\"result\"][\"sessionId\"];\r",
+									"\r",
+									"postman.setEnvironmentVariable(\"sf_jd_session_id\", sessionId);"
 								],
 								"type": "text/javascript"
 							}
@@ -456,16 +458,9 @@
 							}
 						],
 						"url": {
-							"raw": "https://sfcoecpi.it-cpitrial02-rt.cfapps.eu10-001.hana.ondemand.com/http/triggerExecution",
-							"protocol": "https",
+							"raw": "{{sci_domain}}/http/triggerExecution",
 							"host": [
-								"sfcoecpi",
-								"it-cpitrial02-rt",
-								"cfapps",
-								"eu10-001",
-								"hana",
-								"ondemand",
-								"com"
+								"{{sci_domain}}"
 							],
 							"path": [
 								"http",
@@ -507,16 +502,9 @@
 							}
 						],
 						"url": {
-							"raw": "https://sfcoecpi.it-cpitrial02-rt.cfapps.eu10-001.hana.ondemand.com/http/triggerExecution",
-							"protocol": "https",
+							"raw": "{{sci_domain}}/http/triggerExecution",
 							"host": [
-								"sfcoecpi",
-								"it-cpitrial02-rt",
-								"cfapps",
-								"eu10-001",
-								"hana",
-								"ondemand",
-								"com"
+								"{{sci_domain}}"
 							],
 							"path": [
 								"http",
@@ -525,6 +513,351 @@
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get Workflow Pending Data",
+			"item": [
+				{
+					"name": "Get EC Pending Workflow Data",
+					"item": [
+						{
+							"name": "Get first pending workflow request which is not approving MDF data",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var data = JSON.parse(responseBody);   \r",
+											"postman.setEnvironmentVariable(\"sf_wf_request_id\", data.d.results[0].wfRequestId);\r",
+											"postman.setEnvironmentVariable(\"sf_wf_initiator\", data.d.results[0].createdBy);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{sf_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{sf_username}}@{{sf_company}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{sf_api_odata_domain}}WfRequest?$filter=status+eq+'PENDING'+and+module+ne+'GENERIC_OBJECT'&$select=wfRequestId,createdBy&$format=JSON&$top=1",
+									"host": [
+										"{{sf_api_odata_domain}}WfRequest"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "status+eq+'PENDING'+and+module+ne+'GENERIC_OBJECT'"
+										},
+										{
+											"key": "$select",
+											"value": "wfRequestId,createdBy"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$top",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve Workflow Pending data for  given Workflow Request ID",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{sf_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{sf_username}}@{{sf_company}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{sf_api_odata_domain}}getWorkflowPendingData?wfRequestId={{sf_wf_request_id}}L&$format=JSON&$expand=workflowAttributeGroups",
+									"host": [
+										"{{sf_api_odata_domain}}getWorkflowPendingData"
+									],
+									"query": [
+										{
+											"key": "wfRequestId",
+											"value": "{{sf_wf_request_id}}L"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$expand",
+											"value": "workflowAttributeGroups"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all EC Workflows triggered by a given user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{sf_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{sf_username}}@{{sf_company}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{sf_api_odata_domain}}WfRequest?$format=JSON&$expand=empWfRequestNav,wfRequestUINav,wfRequestStepNav&$filter=createdBy+eq+'{{sf_wf_initiator}}'+and+status+eq+'PENDING'",
+									"host": [
+										"{{sf_api_odata_domain}}WfRequest"
+									],
+									"query": [
+										{
+											"key": "$skip",
+											"value": "100",
+											"disabled": true
+										},
+										{
+											"key": "$top",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$expand",
+											"value": "empWfRequestNav,wfRequestUINav,wfRequestStepNav"
+										},
+										{
+											"key": "$filter",
+											"value": "createdBy+eq+'{{sf_wf_initiator}}'+and+status+eq+'PENDING'"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get MDF Pending Workflow Data",
+					"item": [
+						{
+							"name": "Get first pending position workflow",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var data = JSON.parse(responseBody);   \r",
+											"postman.setEnvironmentVariable(\"sf_wf_initiator\", data.d.results[0].wfRequestNav.results[0].createdBy);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{sf_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{sf_username}}@{{sf_company}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{sf_api_odata_domain}}Position?recordStatus=pending&$format=JSON&$expand=wfRequestNav&$top=1&$select=wfRequestNav/createdBy",
+									"host": [
+										"{{sf_api_odata_domain}}Position"
+									],
+									"query": [
+										{
+											"key": "recordStatus",
+											"value": "pending"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$expand",
+											"value": "wfRequestNav"
+										},
+										{
+											"key": "$top",
+											"value": "1"
+										},
+										{
+											"key": "$select",
+											"value": "wfRequestNav/createdBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all pending Position Data triggered by a given user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{sf_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{sf_username}}@{{sf_company}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{sf_api_odata_domain}}Position?recordStatus=pending&$format=JSON&$expand=wfRequestNav&$filter=wfRequestNav/status+eq+'PENDING'+and+wfRequestNav/createdBy+eq+'{{sf_wf_initiator}}'",
+									"host": [
+										"{{sf_api_odata_domain}}Position"
+									],
+									"query": [
+										{
+											"key": "$skip",
+											"value": "100",
+											"disabled": true
+										},
+										{
+											"key": "$top",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "recordStatus",
+											"value": "pending"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$expand",
+											"value": "wfRequestNav"
+										},
+										{
+											"key": "$filter",
+											"value": "wfRequestNav/status+eq+'PENDING'+and+wfRequestNav/createdBy+eq+'{{sf_wf_initiator}}'"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}
