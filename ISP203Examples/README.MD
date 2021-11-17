@@ -29,7 +29,26 @@ Provide values for all variable in the environment which are marked with entries
 # Run Postman collection
 
 ## Scenario 1: Calling SAP SuccessFactors OData APIs using oAuth2 with SAML Bearer Assertion
+
+### Step 1
+Call the "generate oAuth SAML assertion" request. This generates the SAML assertion using the private key and stores it in a postman variable.
+### Step 2
+Call the "request oAuth access token with SAML assertion" request. This used the SAML assertion the get the access token and stores it again in a variable.
+### Step 3
+Call either the "SOAP API Login with oAuth Access Token" and followed by the "SOAP UI Query CE API Fullmode Copy" request to get data via the access token using the SOAP API or call the "Get User with oAuth Access Token" request to get data from the User Entity using OData with the access token.
+
+# Trigger SAP Cloud Integration Flow from Postman
+
 ### Step 1:
+Upload the integration flow into your SAP Cloud Integration environment
 
+### Step 2: 
+Follow those two blogs to configure the corresponding key pair and security credentials of your tenant: https://blogs.sap.com/2021/03/26/sap-cloud-integration-oauth2-saml-bearer-x.509-certificate-authentication-support-in-successfactors-connector/ 
 
-# SAP Cloud Integration Flow
+### Step 3:
+Follow this blog to configure your BTP user to allow calling the CPI flow from postman
+https://blogs.sap.com/2018/04/17/working-with-http-input-in-sap-cloud-platform-integration-flows-and-how-to-test-these-flows-with-postman/ 
+![image](https://user-images.githubusercontent.com/25485598/142267538-31708e94-1db6-47db-8d40-f38ff943281b.png)
+
+### Step 4:
+Call the "Fetch Token X-CSRF Token" in Postman followed by the "Trigger CPI Flow with X-CSRF Token" request to trigger the CPI flow.
