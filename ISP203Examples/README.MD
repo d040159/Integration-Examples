@@ -48,7 +48,6 @@ Follow those two blogs to configure the corresponding key pair and security cred
 ### Step 3:
 Follow this blog to configure your BTP user to allow calling the CPI flow from postman
 https://blogs.sap.com/2018/04/17/working-with-http-input-in-sap-cloud-platform-integration-flows-and-how-to-test-these-flows-with-postman/ 
-![image](https://user-images.githubusercontent.com/25485598/142267538-31708e94-1db6-47db-8d40-f38ff943281b.png)
 
 ### Step 4:
 Call the "Fetch Token X-CSRF Token" in Postman followed by the "Trigger CPI Flow with X-CSRF Token" request to trigger the CPI flow.
