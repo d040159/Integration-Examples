@@ -43,10 +43,10 @@ Call either the "SOAP API Login with oAuth Access Token" and followed by the "SO
 Upload the integration flow into your SAP Cloud Integration environment
 
 ### Step 2: 
-Follow those two blogs to configure the corresponding key pair and security credentials of your tenant: https://blogs.sap.com/2021/03/26/sap-cloud-integration-oauth2-saml-bearer-x.509-certificate-authentication-support-in-successfactors-connector/ 
+Follow this blog to configure the corresponding key pair and security credentials of your tenant: https://blogs.sap.com/2021/03/26/sap-cloud-integration-oauth2-saml-bearer-x.509-certificate-authentication-support-in-successfactors-connector/ 
 
 ### Step 3:
-Follow this blog to configure your BTP user to allow calling the CPI flow from postman
+Follow this blog to configure your BTP user to allow calling the uploaded CPI flow from postman
 https://blogs.sap.com/2018/04/17/working-with-http-input-in-sap-cloud-platform-integration-flows-and-how-to-test-these-flows-with-postman/ 
 
 ### Step 4:
