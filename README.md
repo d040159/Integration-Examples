@@ -32,4 +32,4 @@ API examples in this collection are structured by the SAP SuccessFactors modules
 
 Some of the examples are build in a way that the order of the execution of API calls matters, e.g. the Folder "Compound Employee SOAP API" demonstrates the usage of oAuth2 with the SOAP API and changes first some data, before it does the SOAP login to create a session, followed by several SOAP Querries. 
 
-
+The examples in the *SAP SuccessFactors Platform* Folder are also documented in this blog: https://blogs.sap.com/2022/08/18/demystify-sap-successfactors-role-based-permission-apis/ 
