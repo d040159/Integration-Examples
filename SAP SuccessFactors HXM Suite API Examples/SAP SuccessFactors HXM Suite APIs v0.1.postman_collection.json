@@ -85,6 +85,38 @@
 							"response": []
 						},
 						{
+							"name": "Query all Users which are not normal internal active users (includes external ones as well as inactive ones)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}User?$filter=status+ne+'t'&$format=JSON&$expand=personKeyNav&$select=status,userId,username,personKeyNav/personIdExternal,personKeyNav/perPersonUuid",
+									"host": [
+										"{{APIServerURLODataV2}}User"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "status+ne+'t'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$expand",
+											"value": "personKeyNav"
+										},
+										{
+											"key": "$select",
+											"value": "status,userId,username,personKeyNav/personIdExternal,personKeyNav/perPersonUuid"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Read User with Username",
 							"request": {
 								"method": "GET",
@@ -1212,7 +1244,7 @@
 					]
 				},
 				{
-					"name": "Employment Information",
+					"name": "Employment Information (not ready yet)",
 					"item": [
 						{
 							"name": "New Request",
@@ -1514,29 +1546,13 @@
 						{
 							"name": "Get Existing Position",
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "password",
-											"value": "{{APIUserPassword}}",
-											"type": "string"
-										},
-										{
-											"key": "username",
-											"value": "{{APIUserName}}@{{CompanyId}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{APIServerURLODataV2}}Position(code='50014362',effectiveStartDate=datetime'1990-01-01T00:00:00')?$format=JSON",
+									"raw": "{{APIServerURLODataV2}}Position(code='{{PositionExternalCode}}',effectiveStartDate=datetime'{{PositionStartDate}}')?$format=JSON",
 									"host": [
-										"{{APIServerURLODataV2}}Position(code='50014362',effectiveStartDate=datetime'1990-01-01T00:00"
+										"{{APIServerURLODataV2}}Position(code='{{PositionExternalCode}}',effectiveStartDate=datetime'{{PositionStartDate}}')"
 									],
-									"port": "00')",
 									"query": [
 										{
 											"key": "$format",
@@ -1556,21 +1572,6 @@
 								}
 							},
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "username",
-											"value": "{{APIUserName}}@{{CompanyId}}",
-											"type": "string"
-										},
-										{
-											"key": "password",
-											"value": "{{APIUserPassword}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
 								"header": [
 									{
@@ -1598,28 +1599,13 @@
 							"response": []
 						},
 						{
-							"name": "Modify Position",
+							"name": "Modify Position using POST and x-http-method",
 							"protocolProfileBehavior": {
 								"disabledSystemHeaders": {
 									"content-type": true
 								}
 							},
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "username",
-											"value": "{{APIUserName}}@{{CompanyId}}",
-											"type": "string"
-										},
-										{
-											"key": "password",
-											"value": "{{APIUserPassword}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "POST",
 								"header": [
 									{
@@ -1653,23 +1639,37 @@
 							"response": []
 						},
 						{
+							"name": "Modify Position using upsert (preferred)",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"content-type": true
+								}
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "default"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"__metadata\": {\r\n            \"uri\": \"Position\"\r\n    },\r\n    \"code\": \"{{PositionNewCode}}\",\r\n    \"effectiveStartDate\": \"/Date(1574245948000)/\",\r\n    \"comment\": \"Updating position location\",\r\n    \"location\": \"1710-2009\"\r\n}"
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}upsert",
+									"host": [
+										"{{APIServerURLODataV2}}upsert"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Get Created Position",
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "username",
-											"value": "{{APIUserName}}@{{CompanyId}}",
-											"type": "string"
-										},
-										{
-											"key": "password",
-											"value": "{{APIUserPassword}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
@@ -1690,21 +1690,6 @@
 						{
 							"name": "Delete Position",
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "username",
-											"value": "{{APIUserName}}@{{CompanyId}}",
-											"type": "string"
-										},
-										{
-											"key": "password",
-											"value": "{{APIUserPassword}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "DELETE",
 								"header": [],
 								"url": {
@@ -1907,7 +1892,7 @@
 							"response": []
 						},
 						{
-							"name": "SOAP UI Query CE API full data load Copy",
+							"name": "SOAP UI Query CE API full data load",
 							"request": {
 								"auth": {
 									"type": "noauth"
@@ -1927,7 +1912,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:urn=\"urn:sfobject.sfapi.successfactors.com\">\r\n   <soapenv:Header/>\r\n   <soapenv:Body>\r\n      <urn:query>\r\n         <urn:queryString>\r\n            select person\r\n\t\t\t\t ,personal_information\r\n\t\t\t\t ,address_information\r\n\t\t\t\t ,employment_information \r\n\t\t\t\t ,job_information\r\n\t\t\t\t ,compensation_information\r\n\t\t\t\t ,paycompensation_recurring\r\n\t\t\t\t ,paycompensation_non_recurring \r\n\t\t\t\t ,national_id_card\t\t\t\t \r\n\t\t\t\t ,email_information \r\n\t\t\t\t ,phone_information\r\n\t\t\t\t ,person_relation \r\n\t\t\t\t ,job_relation\r\n\t\t\t\t ,global_assignment_information \r\n\t\t\tfrom\tCompoundEmployee\r\n\t\t\twhere\t\tperson_id_external = '{{EmployeePersonIDExternal}}'\r\n         </urn:queryString>\r\n    \r\n         <urn:param>\r\n            <urn:name>maxRows</urn:name>\r\n            <urn:value>800</urn:value>\r\n         </urn:param>\r\n      </urn:query>\r\n   </soapenv:Body>\r\n</soapenv:Envelope>",
+									"raw": "<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:urn=\"urn:sfobject.sfapi.successfactors.com\">\r\n   <soapenv:Header/>\r\n   <soapenv:Body>\r\n      <urn:query>\r\n         <urn:queryString>\r\n            select person\r\n\t\t\t\t ,personal_information\r\n\t\t\t\t ,address_information\r\n\t\t\t\t ,employment_information \r\n\t\t\t\t ,job_information\r\n\t\t\t\t ,compensation_information\r\n\t\t\t\t ,paycompensation_recurring\r\n\t\t\t\t ,paycompensation_non_recurring \r\n\t\t\t\t ,national_id_card\t\t\t\t \r\n\t\t\t\t ,email_information \r\n\t\t\t\t ,phone_information\r\n\t\t\t\t ,person_relation \r\n\t\t\t\t ,job_relation\r\n\t\t\tfrom\tCompoundEmployee\r\n\t\t\twhere\t\t person_id_external = '{{EmployeePersonIDExternal}}' \r\n         </urn:queryString>\r\n    \r\n         <urn:param>\r\n            <urn:name>maxRows</urn:name>\r\n            <urn:value>800</urn:value>\r\n         </urn:param>\r\n      </urn:query>\r\n   </soapenv:Body>\r\n</soapenv:Envelope>",
 									"options": {
 										"raw": {
 											"language": "xml"
@@ -1944,7 +1929,7 @@
 							"response": []
 						},
 						{
-							"name": "SOAP UI Query CE API delta load",
+							"name": "SOAP UI Query CE API delta load (trigger change using first request in collection first to set selection date corretly)",
 							"request": {
 								"auth": {
 									"type": "noauth"
@@ -2211,7 +2196,7 @@
 					"name": "Person Information",
 					"item": [
 						{
-							"name": "Get Biographical Data of a given Person Copy",
+							"name": "Get Biographical and Personal Data from an inactive employee",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -2232,6 +2217,42 @@
 										{
 											"key": "fromDate",
 											"value": "1900-01-01"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Biographical Data of a given Person Copy 2",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}PerPerson?$filter=personIdExternal+eq+'{{TerminatedEmployeePersonIDExternal}}'&$format=ATOM&fromDate=1900-01-01&$expand=personalInfoNav,employmentNav,employmentNav/jobInfoNav,employmentNav/jobInfoNav/emplStatusNav,employmentNav/jobInfoNav/eventNav&$select=personId,personIdExternal,personalInfoNav/firstName,personalInfoNav/lastName,employmentNav/startDate,employmentNav/seniorityDate,employmentNav/originalStartDate,employmentNav/lastDateWorked,employmentNav/firstDateWorked,employmentNav/jobInfoNav/seqNumber,employmentNav/jobInfoNav/userId,employmentNav/jobInfoNav/startDate,employmentNav/jobInfoNav/endDate,employmentNav/jobInfoNav/event,employmentNav/jobInfoNav/emplStatus,employmentNav/jobInfoNav/emplStatusNav/externalCode,employmentNav/jobInfoNav/eventNav/externalCode",
+									"host": [
+										"{{APIServerURLODataV2}}PerPerson"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "personIdExternal+eq+'{{TerminatedEmployeePersonIDExternal}}'"
+										},
+										{
+											"key": "$format",
+											"value": "ATOM"
+										},
+										{
+											"key": "fromDate",
+											"value": "1900-01-01"
+										},
+										{
+											"key": "$expand",
+											"value": "personalInfoNav,employmentNav,employmentNav/jobInfoNav,employmentNav/jobInfoNav/emplStatusNav,employmentNav/jobInfoNav/eventNav"
+										},
+										{
+											"key": "$select",
+											"value": "personId,personIdExternal,personalInfoNav/firstName,personalInfoNav/lastName,employmentNav/startDate,employmentNav/seniorityDate,employmentNav/originalStartDate,employmentNav/lastDateWorked,employmentNav/firstDateWorked,employmentNav/jobInfoNav/seqNumber,employmentNav/jobInfoNav/userId,employmentNav/jobInfoNav/startDate,employmentNav/jobInfoNav/endDate,employmentNav/jobInfoNav/event,employmentNav/jobInfoNav/emplStatus,employmentNav/jobInfoNav/emplStatusNav/externalCode,employmentNav/jobInfoNav/eventNav/externalCode"
 										}
 									]
 								}
@@ -2602,7 +2623,7 @@
 							"response": []
 						},
 						{
-							"name": "New Request",
+							"name": "Delete Bank Details",
 							"request": {
 								"method": "DELETE",
 								"header": [],
@@ -2996,6 +3017,34 @@
 										}
 									]
 								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User filtered by external Person ID (Deep Filter)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}User?$filter=startswith(lastName,'Am')",
+									"host": [
+										"{{APIServerURLODataV2}}User"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "startswith(lastName,'Am')"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User filtered by external Person ID (Deep Filter) Copy",
+							"request": {
+								"method": "GET",
+								"header": []
 							},
 							"response": []
 						}
