@@ -45,12 +45,49 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{APIServerURLODataV2}}User,UserAccount,UserPermissions/$metadata",
+									"raw": "{{APIServerURLODataV2}}User,Photo/$metadata",
 									"host": [
-										"{{APIServerURLODataV2}}User,UserAccount,UserPermissions"
+										"{{APIServerURLODataV2}}User,Photo"
 									],
 									"path": [
 										"$metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get metadata for a specific entity User and Photo using language DE",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}User,Photo/$metadata?sap-language=de-DE",
+									"host": [
+										"{{APIServerURLODataV2}}User,Photo"
+									],
+									"path": [
+										"$metadata"
+									],
+									"query": [
+										{
+											"key": "sap-language",
+											"value": "de-DE"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "The OData Entity-Entity",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Entity('User')",
+									"host": [
+										"{{APIServerURLODataV2}}Entity('User')"
 									]
 								}
 							},
@@ -68,7 +105,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n                \"status\": \"t\",\r\n                \"userId\": \"{{NewUserName}}\",\r\n                \"username\": \"{{NewUserName}}\",\r\n                \"lastName\": \"{{NewUserName}}\",\r\n                \"firstName\": \"{{NewUserName}}\"\r\n}",
+									"raw": "{\r\n                \"status\": \"t\",\r\n                \"userId\": \"gr1000\",\r\n                \"username\": \"sfapigr1000\",\r\n                \"lastName\": \"Your last name\",\r\n                \"firstName\": \"Your first name\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2764,42 +2801,6 @@
 					"name": "JobApplication",
 					"item": [
 						{
-							"name": "Get all Job Applications for a given Application Status Set Id",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{APIServerURLODataV2}}JobApplicationStatus?$format=JSON&expand=jobApplications&$expand=jobAppStatusLabel,jobApplications,jobApplications/jobApplicationStatusAuditTrail/jobAppStatus&$orderby=appStatusSetId+asc&$filter=appStatusSetId+eq+'13'",
-									"host": [
-										"{{APIServerURLODataV2}}JobApplicationStatus"
-									],
-									"query": [
-										{
-											"key": "$format",
-											"value": "JSON"
-										},
-										{
-											"key": "expand",
-											"value": "jobApplications"
-										},
-										{
-											"key": "$expand",
-											"value": "jobAppStatusLabel,jobApplications,jobApplications/jobApplicationStatusAuditTrail/jobAppStatus"
-										},
-										{
-											"key": "$orderby",
-											"value": "appStatusSetId+asc"
-										},
-										{
-											"key": "$filter",
-											"value": "appStatusSetId+eq+'13'"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "Get all Job Application Statuses",
 							"request": {
 								"method": "GET",
@@ -3021,7 +3022,7 @@
 							"response": []
 						},
 						{
-							"name": "Get User filtered by external Person ID (Deep Filter)",
+							"name": "Search User by lastname starting with \"Am\"",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -3041,10 +3042,22 @@
 							"response": []
 						},
 						{
-							"name": "Get User filtered by external Person ID (Deep Filter) Copy",
+							"name": "Get User filtered by external Person ID (Deep Filter)",
 							"request": {
 								"method": "GET",
-								"header": []
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}User?$filter=personKeyNav/personIdExternal+eq+'{{EmployeePersonIDExternal}}'",
+									"host": [
+										"{{APIServerURLODataV2}}User"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "personKeyNav/personIdExternal+eq+'{{EmployeePersonIDExternal}}'"
+										}
+									]
+								}
 							},
 							"response": []
 						}
@@ -3054,7 +3067,7 @@
 					"name": "Authentication",
 					"item": [
 						{
-							"name": "Read one User using Basic Authentication",
+							"name": "Read one User using Basic Authentication (Deprecated)",
 							"request": {
 								"auth": {
 									"type": "basic",
@@ -3135,6 +3148,61 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Batching",
+					"item": [
+						{
+							"name": "OData Request with virutal URL",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Photo,User/User?$filter=userId+eq+'{{EmployeeUserID}}'&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}Photo,User"
+									],
+									"path": [
+										"User"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "userId+eq+'{{EmployeeUserID}}'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "OData Request with virutal URL Copy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}PicklistOption,Picklist/Picklist('sysJobCodes')?$expand=picklistOptions",
+									"host": [
+										"{{APIServerURLODataV2}}PicklistOption,Picklist"
+									],
+									"path": [
+										"Picklist('sysJobCodes')"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "picklistOptions"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
@@ -3187,13 +3255,25 @@
 						},
 						{
 							"key": "user_id",
-							"value": "{{APIUserName}}",
+							"value": "{{APIUserID}}",
 							"type": "text"
 						},
 						{
 							"key": "token_url",
 							"value": "{{OAuthTokenURL}}",
 							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "222",
+							"type": "default",
+							"disabled": true
+						},
+						{
+							"key": "use_username",
+							"value": "true",
+							"type": "default",
+							"disabled": true
 						}
 					]
 				},
