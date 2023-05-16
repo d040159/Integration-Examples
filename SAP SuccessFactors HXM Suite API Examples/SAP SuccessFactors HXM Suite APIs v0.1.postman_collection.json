@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "27b738c0-c4f6-4962-81f1-8c5008b62f92",
-		"name": "SAP SuccessFactors HXM Suite APIs v0.1",
+		"name": "SAP SuccessFactors HXM Suite APIs v0.11",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -80,7 +80,7 @@
 							"response": []
 						},
 						{
-							"name": "The OData Entity-Entity",
+							"name": "The OData Entity-Entity for User",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -88,6 +88,40 @@
 									"raw": "{{APIServerURLODataV2}}Entity('User')",
 									"host": [
 										"{{APIServerURLODataV2}}Entity('User')"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "The OData Entity-Entity for EmpJob",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Entity('EmpJob')",
+									"host": [
+										"{{APIServerURLODataV2}}Entity('EmpJob')"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Event Metadata for Absence Event Type",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}getExtEventMetaDataDefinition?event=Absence",
+									"host": [
+										"{{APIServerURLODataV2}}getExtEventMetaDataDefinition"
+									],
+									"query": [
+										{
+											"key": "event",
+											"value": "Absence"
+										}
 									]
 								}
 							},
@@ -105,7 +139,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n                \"status\": \"t\",\r\n                \"userId\": \"gr1000\",\r\n                \"username\": \"sfapigr1000\",\r\n                \"lastName\": \"Your last name\",\r\n                \"firstName\": \"Your first name\"\r\n}",
+									"raw": "{\r\n                \"status\": \"t\",\r\n                \"userId\": \"gr1234\",\r\n                \"username\": \"sfapigr1234\",\r\n                \"lastName\": \"Your last name\",\r\n                \"firstName\": \"Your first name\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -116,6 +150,76 @@
 									"raw": "{{APIServerURLODataV2}}User",
 									"host": [
 										"{{APIServerURLODataV2}}User"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Change Email of API User",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"__metadata\": {\r\n                    \"uri\": \"{{APIServerURLODataV2}}odata/v2/User('gr1234')\",\r\n                    \"type\": \"SFOData.User\"\r\n                },\r\n                \"email\":\"youremail@bestrun.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}upsert",
+									"host": [
+										"{{APIServerURLODataV2}}upsert"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Read API User by Username",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}User?$filter=username+eq+'sfapigr1234'&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}User"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "username+eq+'sfapigr1234'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Count all active Users",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}User/$count?$filter=status+eq+'t'",
+									"host": [
+										"{{APIServerURLODataV2}}User"
+									],
+									"path": [
+										"$count"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "status+eq+'t'"
+										}
 									]
 								}
 							},
@@ -280,7 +384,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{APIServerURLODataV2}}Attachment?$filter=userId+eq+'{{EmployeeUserID}}'&$format=JSON&$filter=userId+eq+'mhoff'",
+									"raw": "{{APIServerURLODataV2}}Attachment?$filter=userId+eq+'{{EmployeeUserID}}'",
 									"host": [
 										"{{APIServerURLODataV2}}Attachment"
 									],
@@ -288,14 +392,6 @@
 										{
 											"key": "$filter",
 											"value": "userId+eq+'{{EmployeeUserID}}'"
-										},
-										{
-											"key": "$format",
-											"value": "JSON"
-										},
-										{
-											"key": "$filter",
-											"value": "userId+eq+'mhoff'"
 										}
 									]
 								}
@@ -344,6 +440,46 @@
 							"response": []
 						},
 						{
+							"name": "Get DocumentType for Workpermit Attachment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"postman.setEnvironmentVariable(\"AttachmentDocumentType\", jsonData.d.results[0].id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}PicklistOption?$filter=parentPicklistOption/picklist/picklistId+eq+'ISOCountryList'+and+parentPicklistOption/externalCode+eq+'USA'+and+picklist/picklistId+eq+'permitdoctype'+and+externalCode+eq+'US1'&$expand=childPicklistOptions&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}PicklistOption"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "parentPicklistOption/picklist/picklistId+eq+'ISOCountryList'+and+parentPicklistOption/externalCode+eq+'USA'+and+picklist/picklistId+eq+'permitdoctype'+and+externalCode+eq+'US1'"
+										},
+										{
+											"key": "$expand",
+											"value": "childPicklistOptions"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Create Work Permit linking created Attachment",
 							"protocolProfileBehavior": {
 								"disabledSystemHeaders": {}
@@ -353,7 +489,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"__metadata\": {\r\n        \"uri\": \"EmpWorkPermit\"\r\n    },\r\n    \"country\": \"232\",\r\n    \"documentType\": \"9980\",\r\n    \"documentNumber\": \"131231231\",\r\n    \"userId\": \"{{EmployeeUserID}}\",\r\n    \"isValidated\": false,\r\n    \"attachmentId\": \"8660\",\r\n    \"documentTitle\": \"Test\",\r\n    \"issueDate\": \"/Date(1660089600000)/\"\r\n\r\n}",
+									"raw": "{\r\n    \"__metadata\": {\r\n        \"uri\": \"EmpWorkPermit\"\r\n    },\r\n    \"country\": \"232\",\r\n    \"documentType\": \"{{AttachmentDocumentType}}\",\r\n    \"documentNumber\": \"131231231\",\r\n    \"userId\": \"{{EmployeeUserID}}\",\r\n    \"isValidated\": false,\r\n    \"attachmentId\": \"{{AttachmentID}}\",\r\n    \"documentTitle\": \"Test\",\r\n    \"issueDate\": \"/Date(1660089600000)/\"\r\n\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -539,7 +675,7 @@
 												},
 												{
 													"key": "user_id",
-													"value": "{{APIUserName}}",
+													"value": "{{APIUserID}}",
 													"type": "text"
 												},
 												{
@@ -1152,6 +1288,288 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "GetMetadata for Permission Entities",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{APIServerURLODataV2}}RBPRole,RBPRule,RBPBasicPermission/$metadata",
+											"host": [
+												"{{APIServerURLODataV2}}RBPRole,RBPRule,RBPBasicPermission"
+											],
+											"path": [
+												"$metadata"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Permission Groups",
+							"item": [
+								{
+									"name": "Get Metadata",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse( responseBody );\r",
+													"\r",
+													"postman.setEnvironmentVariable(\"RBPStaticGroup\", jsonData.d.results[0].groupID);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{APIServerURLODataV2}}DynamicGroup?$top=20&$format=JSON&$filter=staticGroup+eq+true",
+											"host": [
+												"{{APIServerURLODataV2}}DynamicGroup"
+											],
+											"query": [
+												{
+													"key": "$top",
+													"value": "20"
+												},
+												{
+													"key": "$format",
+													"value": "JSON"
+												},
+												{
+													"key": "$filter",
+													"value": "staticGroup+eq+true"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Read All Static Groups",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse( responseBody );\r",
+													"\r",
+													"postman.setEnvironmentVariable(\"RBPStaticGroup\", jsonData.d.results[0].groupID);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{APIServerURLODataV2}}DynamicGroup?$top=20&$format=JSON&$filter=staticGroup+eq+true",
+											"host": [
+												"{{APIServerURLODataV2}}DynamicGroup"
+											],
+											"query": [
+												{
+													"key": "$top",
+													"value": "20"
+												},
+												{
+													"key": "$format",
+													"value": "JSON"
+												},
+												{
+													"key": "$filter",
+													"value": "staticGroup+eq+true"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Remove user by UserId from a static group",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{APIServerURLODataV2}}updateStaticGroup?groupId={{RBPStaticGroup}}L&action='remove'&userIds='{{EmployeeUserID}}'",
+											"host": [
+												"{{APIServerURLODataV2}}updateStaticGroup"
+											],
+											"query": [
+												{
+													"key": "groupId",
+													"value": "{{RBPStaticGroup}}L"
+												},
+												{
+													"key": "action",
+													"value": "'remove'"
+												},
+												{
+													"key": "userIds",
+													"value": "'{{EmployeeUserID}}'"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add user by UserId from a static group Copy",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{APIServerURLODataV2}}updateStaticGroup?groupId={{RBPStaticGroup}}L&action='add'&userIds='{{EmployeeUserID}}'",
+											"host": [
+												"{{APIServerURLODataV2}}updateStaticGroup"
+											],
+											"query": [
+												{
+													"key": "groupId",
+													"value": "{{RBPStaticGroup}}L"
+												},
+												{
+													"key": "action",
+													"value": "'add'"
+												},
+												{
+													"key": "userIds",
+													"value": "'{{EmployeeUserID}}'"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Read first 20 Dynamic Groups",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse( responseBody );\r",
+													"\r",
+													"postman.setEnvironmentVariable(\"RBPDynamicGroup\", jsonData.d.results[0].groupID);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{APIServerURLODataV2}}DynamicGroup?$top=20&$format=JSON&$filter=staticGroup+eq+false",
+											"host": [
+												"{{APIServerURLODataV2}}DynamicGroup"
+											],
+											"query": [
+												{
+													"key": "$top",
+													"value": "20"
+												},
+												{
+													"key": "$format",
+													"value": "JSON"
+												},
+												{
+													"key": "$filter",
+													"value": "staticGroup+eq+false"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Dynamic Group by Name",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = JSON.parse( responseBody );\r",
+													"\r",
+													"postman.setEnvironmentVariable(\"RBPDynamicGroupID\", jsonData.d.results[0].groupID);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{APIServerURLODataV2}}DynamicGroup?$filter=groupName+eq+'{{RBPDynamicGroupName}}'&$format=JSON",
+											"host": [
+												"{{APIServerURLODataV2}}DynamicGroup"
+											],
+											"query": [
+												{
+													"key": "$filter",
+													"value": "groupName+eq+'{{RBPDynamicGroupName}}'"
+												},
+												{
+													"key": "$format",
+													"value": "JSON"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get User of Dynamic Group by ID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{APIServerURLODataV2}}getUsersByDynamicGroup?groupId={{RBPDynamicGroupID}}L&activeOnly=false",
+											"host": [
+												"{{APIServerURLODataV2}}getUsersByDynamicGroup"
+											],
+											"query": [
+												{
+													"key": "groupId",
+													"value": "{{RBPDynamicGroupID}}L"
+												},
+												{
+													"key": "activeOnly",
+													"value": "false"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Read Dynamic Group with all expanded entities by ID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{APIServerURLODataV2}}getExpandedDynamicGroupById?groupId={{RBPDynamicGroupID}}L",
+											"host": [
+												"{{APIServerURLODataV2}}getExpandedDynamicGroupById"
+											],
+											"query": [
+												{
+													"key": "groupId",
+													"value": "{{RBPDynamicGroupID}}L"
+												}
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						}
@@ -1202,7 +1620,7 @@
 							"response": []
 						},
 						{
-							"name": "Get Todos of Carla Grant",
+							"name": "Get Todos of Employee",
 							"protocolProfileBehavior": {
 								"disabledSystemHeaders": {}
 							},
@@ -1210,14 +1628,645 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{APIServerURLODataV2}}TodoEntryV2?$filter=userId+eq+'cgrante'",
+									"raw": "{{APIServerURLODataV2}}TodoEntryV2?$filter=userId+eq+'{{EmployeeUserID}}'&$format=JSON",
 									"host": [
 										"{{APIServerURLODataV2}}TodoEntryV2"
 									],
 									"query": [
 										{
 											"key": "$filter",
-											"value": "userId+eq+'cgrante'"
+											"value": "userId+eq+'{{EmployeeUserID}}'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Todos with Category 41",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}TodoEntryV2?$filter=categoryId+eq+'41'&$format=atom&$select=subjectId,userId,createdDate,todoEntryId",
+									"host": [
+										"{{APIServerURLODataV2}}TodoEntryV2"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "categoryId+eq+'41'"
+										},
+										{
+											"key": "$format",
+											"value": "atom"
+										},
+										{
+											"key": "$select",
+											"value": "subjectId,userId,createdDate,todoEntryId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Todo Entry",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n                \"dueDate\": \"/Date(1651550400000+0000)/\",\r\n                \"todoEntryName\": \"Alice O'Connor (AOConnor)\",               \r\n                \"subjectId\": \"AOConnor\",\r\n                \"linkUrl\": \"https://sap.com\",\r\n                \"categoryId\": \"41\",\r\n                \"status\": 2,\r\n                \"userNav\": {\r\n                    \"__metadata\": \r\n        \t        {\r\n                    \"uri\": \"https://{{APIServerURLODataV2}}User('{{EmployeeUserID}}')\",\r\n                    \"type\": \"SFOData.User\"\r\n        \t    }\r\n        \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}TodoEntryV2",
+									"host": [
+										"{{APIServerURLODataV2}}TodoEntryV2"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Picklists",
+					"item": [
+						{
+							"name": "Metadata for Picklist Entities",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}PicklistOption,Picklist,PicklistLabel/$metadata",
+									"host": [
+										"{{APIServerURLODataV2}}PicklistOption,Picklist,PicklistLabel"
+									],
+									"path": [
+										"$metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Picklist Options for Document Types",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Picklist?$filter=picklistId+eq+'permitdoctype'&$expand=picklistOptions,picklistOptions/picklistLabels,picklistOptions/parentPicklistOption,picklistOptions/parentPicklistOption/parentPicklistOption&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}Picklist"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "picklistId+eq+'permitdoctype'"
+										},
+										{
+											"key": "$expand",
+											"value": "picklistOptions,picklistOptions/picklistLabels,picklistOptions/parentPicklistOption,picklistOptions/parentPicklistOption/parentPicklistOption"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Picklist Options for a picklist in a given landuage",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}PicklistLabel?$filter=picklistOption/picklist/picklistId+eq+'employee-status'+and+locale+eq+'en_US'&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}PicklistLabel"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "picklistOption/picklist/picklistId+eq+'employee-status'+and+locale+eq+'en_US'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Document Types for Country US (Parent Picklist)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}PicklistOption?$filter=parentPicklistOption/picklist/picklistId+eq+'ISOCountryList'+and+parentPicklistOption/externalCode+eq+'USA'+and+picklist/picklistId+eq+'permitdoctype'&$expand=childPicklistOptions&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}PicklistOption"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "parentPicklistOption/picklist/picklistId+eq+'ISOCountryList'+and+parentPicklistOption/externalCode+eq+'USA'+and+picklist/picklistId+eq+'permitdoctype'"
+										},
+										{
+											"key": "$expand",
+											"value": "childPicklistOptions"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Picklist Label in specific language",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}PicklistLabel?$filter=optionId+eq+'17789'+and+locale+eq+'en_US'",
+									"host": [
+										"{{APIServerURLODataV2}}PicklistLabel"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "optionId+eq+'17789'+and+locale+eq+'en_US'"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Job Profile Builder",
+					"item": [
+						{
+							"name": "Get Metadata for JobFamily,JobRole",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}FamilyEntity,RoleEntity/$metadata",
+									"host": [
+										"{{APIServerURLODataV2}}FamilyEntity,RoleEntity"
+									],
+									"path": [
+										"$metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new Job Family",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"keyString=jsonData.d[0].key;\r",
+											"postman.setEnvironmentVariable(\"JobProfileFamily\", keyString.split('externalCode=')[1]);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"__metadata\": {\r\n\"uri\": \"FamilyEntity\",\r\n\"type\": \"SFOData.FamilyEntity\"\r\n},\r\n\"name_de_DE\": \"Software Entwicklung\",\r\n\"name_en_US\": \"Software Engineering\",\r\n\"name_en_GB\": \"Software Engineering\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}upsert?$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}upsert"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Job Family",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"__metadata\": {\r\n\"uri\": \"FamilyEntity\",\r\n\"type\": \"SFOData.FamilyEntity\"\r\n},\r\n\"name_en_US\": \"test1312\",\r\n\"name_en_GB\": \"test131312\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}FamilyEntity?$format=JSON&$filter=externalCode+eq+'{{JobProfileFamily}}'",
+									"host": [
+										"{{APIServerURLODataV2}}FamilyEntity"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$filter",
+											"value": "externalCode+eq+'{{JobProfileFamily}}'"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Job Family",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"__metadata\": {\r\n\"uri\": \"FamilyEntity\",\r\n\"type\": \"SFOData.FamilyEntity\"\r\n},\r\n\"name_en_US\": \"test1312\",\r\n\"name_en_GB\": \"test131312\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}FamilyEntity(externalCode='{{JobProfileFamily}}')",
+									"host": [
+										"{{APIServerURLODataV2}}FamilyEntity(externalCode='{{JobProfileFamily}}')"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new Job Role linked to Family",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"keyString=jsonData.d[0].key;\r",
+											"postman.setEnvironmentVariable(\"JobProfileRole\", keyString.split('externalCode=')[1]);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"__metadata\": {\r\n\"uri\": \"RoleEntity\",\r\n\"type\": \"SFOData.RoleEntity\"\r\n},\r\n\"family\": \"{{JobProfileFamily}}\",\r\n\"name_en_US\": \"Security Architect\",\r\n\"name_en_GB\": \"Security Architect\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}upsert?$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}upsert"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Job Roles of a Job Family",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"__metadata\": {\r\n\"uri\": \"FamilyEntity\",\r\n\"type\": \"SFOData.FamilyEntity\"\r\n},\r\n\"name_en_US\": \"test1312\",\r\n\"name_en_GB\": \"test131312\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}RoleEntity?$format=JSON&$filter=family+eq+'{{JobProfileFamily}}'",
+									"host": [
+										"{{APIServerURLODataV2}}RoleEntity"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$filter",
+											"value": "family+eq+'{{JobProfileFamily}}'"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Job Role",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"__metadata\": {\r\n\"uri\": \"FamilyEntity\",\r\n\"type\": \"SFOData.FamilyEntity\"\r\n},\r\n\"name_en_US\": \"test1312\",\r\n\"name_en_GB\": \"test131312\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}RoleEntity(externalCode='{{JobProfileRole}}')",
+									"host": [
+										"{{APIServerURLODataV2}}RoleEntity(externalCode='{{JobProfileRole}}')"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Photo",
+					"item": [
+						{
+							"name": "Get Photo metadata",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Photo,User/$metadata",
+									"host": [
+										"{{APIServerURLODataV2}}Photo,User"
+									],
+									"path": [
+										"$metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get original photo type of an employee",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Photo?$filter=userId+eq+'{{EmployeeUserID}}'+and+photoType+eq+'1'&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}Photo"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "userId+eq+'{{EmployeeUserID}}'+and+photoType+eq+'1'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all photo types of an employee",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Photo?$filter=userId+eq+'{{EmployeeUserID}}'&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}Photo"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "userId+eq+'{{EmployeeUserID}}'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Theming",
+					"item": [
+						{
+							"name": "Metadata Theming Entities",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}ThemeInfo,ThemeConfig,ThemeTemplate/$metadata",
+									"host": [
+										"{{APIServerURLODataV2}}ThemeInfo,ThemeConfig,ThemeTemplate"
+									],
+									"path": [
+										"$metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get SuccessFactors Theming Info",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"ThemingID\", jsonData.d.results[0].id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}ThemeInfo?$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}ThemeInfo"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get SuccessFactors Theming Config",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}ThemeConfig('{{ThemingID}}')?$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}ThemeConfig('{{ThemingID}}')"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get SuccessFactors Theming Template Homepage",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}ThemeTemplate?moduleId=HOME&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}ThemeTemplate"
+									],
+									"query": [
+										{
+											"key": "moduleId",
+											"value": "HOME"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get SuccessFactors Theming Template Admin with additional parameters",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}ThemeTemplate?moduleId=ADMIN&$format=JSON&breakdown=true&useAbsPaths=true",
+									"host": [
+										"{{APIServerURLODataV2}}ThemeTemplate"
+									],
+									"query": [
+										{
+											"key": "moduleId",
+											"value": "ADMIN"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "breakdown",
+											"value": "true"
+										},
+										{
+											"key": "useAbsPaths",
+											"value": "true"
 										}
 									]
 								}
@@ -1284,133 +2333,27 @@
 					"name": "Employment Information (not ready yet)",
 					"item": [
 						{
-							"name": "New Request",
+							"name": "Get the Job Information History of an Employee",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "https://api2.successfactors.eu/odata/v2/EmpJob?$filter=eventNav/externalCode eq '26' and userNav/status in 'active','inactive' and ((employmentNav/endDate eq datetime'2022-08-30T00:00:00.00' and (employmentNav/customString88Nav/externalCode eq 'Y' or employmentNav/customString88Nav eq null)) or ((employmentNav/endDate eq datetime'2022-08-16T00:00:00.00' and employmentNav/customString88Nav/externalCode eq 'N')) or (employmentNav/lastModifiedDateTime ge datetimeoffset'2022-08-15T01:00:00.000Z' and (employmentNav/customString88Nav/externalCode eq 'Y' or employmentNav/customString88Nav eq null) and employmentNav/endDate le datetime'2022-08-30T00:00:00.00' and employmentNav/endDate ge datetime'2022-08-16T00:00:00.00') or (employmentNav/lastModifiedDateTime ge datetimeoffset'2022-08-15T01:00:00.000Z' and (employmentNav/customString88Nav/externalCode in 'Y', 'N' or employmentNav/customString88Nav eq null) and employmentNav/endDate ge datetime'2022-07-19T00:00:00.00' and employmentNav/endDate lt datetime'2022-08-16T00:00:00.00'))&$expand=emplStatusNav,employeeClassNav,employmentNav,employmentNav/customString88Nav,eventNav,managerUserNav,userNav,userNav/personKeyNav,userNav/externalCodeOfcust_TravelPortletNav,positionNav/companyNav,positionNav,companyNav&$select=userId,lastModifiedDateTime,location,emplStatusNav/externalCode,employeeClassNav/externalCode,employmentNav/endDate,employmentNav/customString88Nav/externalCode,eventNav/externalCode,managerUserNav/email,userNav/email,userNav/firstName,userNav/lastName,userNav/status,userNav/username,userNav/personKeyNav/personIdExternal,employmentNav/lastModifiedDateTime,department,userNav/externalCodeOfcust_TravelPortletNav/cust_ConcurUser,positionNav/companyNav/name,positionNav/companyNav/country,positionNav/companyNav/externalCode,positionNav/company,company,companyNav/externalCode,companyNav/name&toDate=2022-09-08&paging=snapshot",
-									"protocol": "https",
+									"raw": "{{APIServerURLODataV2}}EmpJob?$filter=userId+eq+'{{EmployeeUserID}}'&fromDate=1900-01-01&$format=JSON",
 									"host": [
-										"api2",
-										"successfactors",
-										"eu"
-									],
-									"path": [
-										"odata",
-										"v2",
-										"EmpJob"
+										"{{APIServerURLODataV2}}EmpJob"
 									],
 									"query": [
 										{
 											"key": "$filter",
-											"value": "eventNav/externalCode eq '26' and userNav/status in 'active','inactive' and ((employmentNav/endDate eq datetime'2022-08-30T00:00:00.00' and (employmentNav/customString88Nav/externalCode eq 'Y' or employmentNav/customString88Nav eq null)) or ((employmentNav/endDate eq datetime'2022-08-16T00:00:00.00' and employmentNav/customString88Nav/externalCode eq 'N')) or (employmentNav/lastModifiedDateTime ge datetimeoffset'2022-08-15T01:00:00.000Z' and (employmentNav/customString88Nav/externalCode eq 'Y' or employmentNav/customString88Nav eq null) and employmentNav/endDate le datetime'2022-08-30T00:00:00.00' and employmentNav/endDate ge datetime'2022-08-16T00:00:00.00') or (employmentNav/lastModifiedDateTime ge datetimeoffset'2022-08-15T01:00:00.000Z' and (employmentNav/customString88Nav/externalCode in 'Y', 'N' or employmentNav/customString88Nav eq null) and employmentNav/endDate ge datetime'2022-07-19T00:00:00.00' and employmentNav/endDate lt datetime'2022-08-16T00:00:00.00'))"
-										},
-										{
-											"key": "$expand",
-											"value": "emplStatusNav,employeeClassNav,employmentNav,employmentNav/customString88Nav,eventNav,managerUserNav,userNav,userNav/personKeyNav,userNav/externalCodeOfcust_TravelPortletNav,positionNav/companyNav,positionNav,companyNav"
-										},
-										{
-											"key": "$select",
-											"value": "userId,lastModifiedDateTime,location,emplStatusNav/externalCode,employeeClassNav/externalCode,employmentNav/endDate,employmentNav/customString88Nav/externalCode,eventNav/externalCode,managerUserNav/email,userNav/email,userNav/firstName,userNav/lastName,userNav/status,userNav/username,userNav/personKeyNav/personIdExternal,employmentNav/lastModifiedDateTime,department,userNav/externalCodeOfcust_TravelPortletNav/cust_ConcurUser,positionNav/companyNav/name,positionNav/companyNav/country,positionNav/companyNav/externalCode,positionNav/company,company,companyNav/externalCode,companyNav/name"
-										},
-										{
-											"key": "toDate",
-											"value": "2022-09-08"
-										},
-										{
-											"key": "paging",
-											"value": "snapshot"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "New Request Copy",
-							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "username",
-											"value": "{{username}}@{{company}}",
-											"type": "string"
-										},
-										{
-											"key": "password",
-											"value": "{{password}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{domain}}EmpJob?$filter=userId+eq+'grtterm1'+and+employmentNav/lastModifiedDateTime+gt+datetimeoffset'2022-08-16T09:17:00Z'&$expand=employmentNav&$select=userId,lastModifiedDateTime,employmentNav/lastModifiedDateTime",
-									"host": [
-										"{{domain}}EmpJob"
-									],
-									"query": [
-										{
-											"key": "$filter",
-											"value": "userId+eq+'grtterm1'+and+employmentNav/lastModifiedDateTime+gt+datetimeoffset'2022-08-16T09:17:00Z'"
-										},
-										{
-											"key": "$expand",
-											"value": "employmentNav"
-										},
-										{
-											"key": "$select",
-											"value": "userId,lastModifiedDateTime,employmentNav/lastModifiedDateTime"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Normal",
-							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "username",
-											"value": "{{username}}@{{company}}",
-											"type": "string"
-										},
-										{
-											"key": "password",
-											"value": "{{password}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{domain}}EmpJob?$filter=userId+eq+'grtterm1'&$expand=employmentNav&$select=userId,startDate,lastModifiedDateTime,employmentNav/lastModifiedDateTime&fromDate=01-01-1900",
-									"host": [
-										"{{domain}}EmpJob"
-									],
-									"query": [
-										{
-											"key": "$filter",
-											"value": "userId+eq+'grtterm1'"
-										},
-										{
-											"key": "$expand",
-											"value": "employmentNav"
-										},
-										{
-											"key": "$select",
-											"value": "userId,startDate,lastModifiedDateTime,employmentNav/lastModifiedDateTime"
+											"value": "userId+eq+'{{EmployeeUserID}}'"
 										},
 										{
 											"key": "fromDate",
-											"value": "01-01-1900"
+											"value": "1900-01-01"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
 										}
 									]
 								}
@@ -1418,46 +2361,111 @@
 							"response": []
 						},
 						{
-							"name": "StartDate Filter Copy",
+							"name": "Get the Job Information record from the history of an Employee as of today",
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "username",
-											"value": "{{username}}@{{company}}",
-											"type": "string"
-										},
-										{
-											"key": "password",
-											"value": "{{password}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{domain}}EmpJob?$filter=userId+eq+'grtterm1'+and+startDate+gt+datetime'2022-07-01T00:00:00'+and+employmentNav/lastModifiedDateTime+gt+datetimeoffset'2022-08-16T09:17:00Z'&$expand=employmentNav&$select=userId,startDate,lastModifiedDateTime,employmentNav/lastModifiedDateTime&fromDate=01-01-1900",
+									"raw": "{{APIServerURLODataV2}}EmpJob?$filter=userId+eq+'{{EmployeeUserID}}'&$select=userId,seqNumber,startDate,endDate,position,location,department,fte",
 									"host": [
-										"{{domain}}EmpJob"
+										"{{APIServerURLODataV2}}EmpJob"
 									],
 									"query": [
 										{
 											"key": "$filter",
-											"value": "userId+eq+'grtterm1'+and+startDate+gt+datetime'2022-07-01T00:00:00'+and+employmentNav/lastModifiedDateTime+gt+datetimeoffset'2022-08-16T09:17:00Z'"
-										},
-										{
-											"key": "$expand",
-											"value": "employmentNav"
+											"value": "userId+eq+'{{EmployeeUserID}}'"
 										},
 										{
 											"key": "$select",
-											"value": "userId,startDate,lastModifiedDateTime,employmentNav/lastModifiedDateTime"
+											"value": "userId,seqNumber,startDate,endDate,position,location,department,fte"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get the Job Information record from the history of an Employee as of today Copy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}EmpJob?$filter=userId+eq+'{{EmployeeUserID}}'&$select=userId,seqNumber,startDate,endDate,position,location,department,fte&asOfDate=2019-01-01",
+									"host": [
+										"{{APIServerURLODataV2}}EmpJob"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "userId+eq+'{{EmployeeUserID}}'"
+										},
+										{
+											"key": "$select",
+											"value": "userId,seqNumber,startDate,endDate,position,location,department,fte"
+										},
+										{
+											"key": "asOfDate",
+											"value": "2019-01-01"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Find an employee with an Global Assignment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"EmployeeWithGlobalAssignementPersonIDExternal\", jsonData.d.results[0].personIdExternal);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}EmpEmployment?$filter=assignmentClass+eq+'GA'&$top=1&$select=personIdExternal,userId&$format=json",
+									"host": [
+										"{{APIServerURLODataV2}}EmpEmployment"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "employmentNav",
+											"disabled": true
+										},
+										{
+											"key": "$select",
+											"value": "userId,startDate,lastModifiedDateTime,employmentNav/lastModifiedDateTime",
+											"disabled": true
 										},
 										{
 											"key": "fromDate",
-											"value": "01-01-1900"
+											"value": "01-01-1900",
+											"disabled": true
+										},
+										{
+											"key": "$filter",
+											"value": "assignmentClass+eq+'GA'"
+										},
+										{
+											"key": "$top",
+											"value": "1"
+										},
+										{
+											"key": "$select",
+											"value": "personIdExternal,userId"
+										},
+										{
+											"key": "$format",
+											"value": "json"
 										}
 									]
 								}
@@ -1465,46 +2473,27 @@
 							"response": []
 						},
 						{
-							"name": "New Request Copy 2",
+							"name": "Get all Employments of an Employee with multiple Employment including Job Information",
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "username",
-											"value": "{{username}}@{{company}}",
-											"type": "string"
-										},
-										{
-											"key": "password",
-											"value": "{{password}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{domain}}EmpEmploymentTermination?$filter=userId+eq+'grtterm1'&$select=userId,lastModifiedDateTime,jobInfoNav&$expand=jobInfoNav&fromDate=01-01-1900",
+									"raw": "{{APIServerURLODataV2}}EmpEmployment?$filter=personIdExternal+eq+'{{EmployeeWithGlobalAssignementPersonIDExternal}}'&$expand=jobInfoNav&$format=JSON",
 									"host": [
-										"{{domain}}EmpEmploymentTermination"
+										"{{APIServerURLODataV2}}EmpEmployment"
 									],
 									"query": [
 										{
 											"key": "$filter",
-											"value": "userId+eq+'grtterm1'"
-										},
-										{
-											"key": "$select",
-											"value": "userId,lastModifiedDateTime,jobInfoNav"
+											"value": "personIdExternal+eq+'{{EmployeeWithGlobalAssignementPersonIDExternal}}'"
 										},
 										{
 											"key": "$expand",
 											"value": "jobInfoNav"
 										},
 										{
-											"key": "fromDate",
-											"value": "01-01-1900"
+											"key": "$format",
+											"value": "JSON"
 										}
 									]
 								}
@@ -1512,46 +2501,68 @@
 							"response": []
 						},
 						{
-							"name": "New Request Copy 3",
+							"name": "Get the termination information of an terminated employee",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"TerminatedEmployeePersonIDExternal\", jsonData.d.results[0].personIdExternal);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
-								"auth": {
-									"type": "basic",
-									"basic": [
-										{
-											"key": "username",
-											"value": "{{username}}@{{company}}",
-											"type": "string"
-										},
-										{
-											"key": "password",
-											"value": "{{password}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{domain}}EmpJob?$filter=userId+eq+'grtterm1'&$expand=employmentNav&$format=JSON&$select=userId,lastModifiedDateTime,employmentNav/lastModifiedDateTime",
+									"raw": "{{APIServerURLODataV2}}EmpEmploymentTermination?$top=1&$expand=jobInfoNav,jobInfoNav/eventReasonNav&$format=json",
 									"host": [
-										"{{domain}}EmpJob"
+										"{{APIServerURLODataV2}}EmpEmploymentTermination"
+									],
+									"query": [
+										{
+											"key": "$top",
+											"value": "1"
+										},
+										{
+											"key": "$expand",
+											"value": "jobInfoNav,jobInfoNav/eventReasonNav"
+										},
+										{
+											"key": "$format",
+											"value": "json"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Employment Status value from Picklist",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Picklist?$filter=picklistId+eq+'employee-status'&$expand=picklistOptions,picklistOptions/picklistLabels,picklistOptions/parentPicklistOption,picklistOptions/parentPicklistOption/parentPicklistOption&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}Picklist"
 									],
 									"query": [
 										{
 											"key": "$filter",
-											"value": "userId+eq+'grtterm1'"
+											"value": "picklistId+eq+'employee-status'"
 										},
 										{
 											"key": "$expand",
-											"value": "employmentNav"
+											"value": "picklistOptions,picklistOptions/picklistLabels,picklistOptions/parentPicklistOption,picklistOptions/parentPicklistOption/parentPicklistOption"
 										},
 										{
 											"key": "$format",
 											"value": "JSON"
-										},
-										{
-											"key": "$select",
-											"value": "userId,lastModifiedDateTime,employmentNav/lastModifiedDateTime"
 										}
 									]
 								}
@@ -1781,7 +2792,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"__metadata\": {\r\n        \"uri\": \"https://apisalesdemo4.successfactors.com:443/odata/v2/PerPersonal(personIdExternal='sjacobs',startDate=datetime'2017-01-01T00:00:00')\",\r\n        \"type\": \"SFOData.PerPersonal\"\r\n    },\r\n    \"middleName\": \"Marc\"\r\n}",
+									"raw": "{\r\n    \"__metadata\": {\r\n        \"uri\": \"https://apisalesdemo4.successfactors.com:443/odata/v2/PerPersonal(personIdExternal='{{EmployeeUserID}}',startDate=datetime'2017-01-01T00:00:00')\",\r\n        \"type\": \"SFOData.PerPersonal\"\r\n    },\r\n    \"middleName\": \"Marc3\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2040,6 +3051,43 @@
 							"response": []
 						},
 						{
+							"name": "SOAP UI Query CE API snapshot mode",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/soap+xml",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "JSESSIONID={{APISessionIdSOAP}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:urn=\"urn:sfobject.sfapi.successfactors.com\">\r\n   <soapenv:Header/>\r\n   <soapenv:Body>\r\n      <urn:query>\r\n         <urn:queryString>\r\n            select person\r\n\t\t\t\t ,personal_information\r\n\t\t\t\t ,address_information\r\n\t\t\t\t ,employment_information \r\n\t\t\t\t ,job_information\r\n\t\t\t\t ,compensation_information\r\n\t\t\t\t ,paycompensation_recurring\r\n\t\t\t\t ,paycompensation_non_recurring \r\n\t\t\t\t ,national_id_card\t\t\t\t \r\n\t\t\t\t ,email_information \r\n\t\t\t\t ,phone_information\r\n\t\t\t\t ,person_relation \r\n\t\t\t\t ,job_relation\r\n\t\t\t\t ,global_assignment_information \r\n\t\t\tfrom\tCompoundEmployee\r\n\t\t\twhere\t\tlast_modified_on > to_datetime('{{DateTimeNow}}') \r\n\r\n         </urn:queryString>\r\n          <urn:param>\r\n            <urn:name>queryMode</urn:name>\r\n            <urn:value>delta</urn:value>\r\n         </urn:param>\r\n         <urn:param>\r\n            <urn:name>resultOptions</urn:name>\r\n            <urn:value>changedSegmentsOnly</urn:value>\r\n         </urn:param> \r\n         <urn:param>\r\n            <urn:name>maxRows</urn:name>\r\n            <urn:value>8</urn:value>\r\n         </urn:param>\r\n      </urn:query>\r\n   </soapenv:Body>\r\n</soapenv:Envelope>",
+									"options": {
+										"raw": {
+											"language": "xml"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLSOAP}}",
+									"host": [
+										"{{APIServerURLSOAP}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "SOAP UI Logout",
 							"event": [
 								{
@@ -2233,14 +3281,14 @@
 					"name": "Person Information",
 					"item": [
 						{
-							"name": "Get Biographical and Personal Data from an inactive employee",
+							"name": "Get Biographical Data from an active employee",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{APIServerURLODataV2}}PerPersonal?$filter=personIdExternal+eq+'{{EmployeePersonIDExternal}}'&$format={{APIFormatOData}}&fromDate=1900-01-01",
+									"raw": "{{APIServerURLODataV2}}PerPerson?$filter=personIdExternal+eq+'{{EmployeePersonIDExternal}}'&$format={{APIFormatOData}}",
 									"host": [
-										"{{APIServerURLODataV2}}PerPersonal"
+										"{{APIServerURLODataV2}}PerPerson"
 									],
 									"query": [
 										{
@@ -2250,10 +3298,6 @@
 										{
 											"key": "$format",
 											"value": "{{APIFormatOData}}"
-										},
-										{
-											"key": "fromDate",
-											"value": "1900-01-01"
 										}
 									]
 								}
@@ -2261,12 +3305,12 @@
 							"response": []
 						},
 						{
-							"name": "Get Biographical Data of a given Person Copy 2",
+							"name": "Get Biographical and Personal Data of a inactive employee (terminated)",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{APIServerURLODataV2}}PerPerson?$filter=personIdExternal+eq+'{{TerminatedEmployeePersonIDExternal}}'&$format=ATOM&fromDate=1900-01-01&$expand=personalInfoNav,employmentNav,employmentNav/jobInfoNav,employmentNav/jobInfoNav/emplStatusNav,employmentNav/jobInfoNav/eventNav&$select=personId,personIdExternal,personalInfoNav/firstName,personalInfoNav/lastName,employmentNav/startDate,employmentNav/seniorityDate,employmentNav/originalStartDate,employmentNav/lastDateWorked,employmentNav/firstDateWorked,employmentNav/jobInfoNav/seqNumber,employmentNav/jobInfoNav/userId,employmentNav/jobInfoNav/startDate,employmentNav/jobInfoNav/endDate,employmentNav/jobInfoNav/event,employmentNav/jobInfoNav/emplStatus,employmentNav/jobInfoNav/emplStatusNav/externalCode,employmentNav/jobInfoNav/eventNav/externalCode",
+									"raw": "{{APIServerURLODataV2}}PerPerson?$filter=personIdExternal+eq+'{{TerminatedEmployeePersonIDExternal}}'&$format=ATOM&fromDate=1900-01-01&$expand=personalInfoNav,employmentNav,employmentNav/jobInfoNav,employmentNav/jobInfoNav/emplStatusNav,employmentNav/jobInfoNav/eventNav&$select=personId,personIdExternal,personalInfoNav/firstName,personalInfoNav/lastName,employmentNav/startDate,employmentNav/seniorityDate,employmentNav/originalStartDate,employmentNav/jobInfoNav/seqNumber,employmentNav/jobInfoNav/userId,employmentNav/jobInfoNav/startDate,employmentNav/jobInfoNav/endDate,employmentNav/jobInfoNav/event,employmentNav/jobInfoNav/emplStatus,employmentNav/jobInfoNav/emplStatusNav/externalCode,employmentNav/jobInfoNav/eventNav/externalCode",
 									"host": [
 										"{{APIServerURLODataV2}}PerPerson"
 									],
@@ -2289,7 +3333,7 @@
 										},
 										{
 											"key": "$select",
-											"value": "personId,personIdExternal,personalInfoNav/firstName,personalInfoNav/lastName,employmentNav/startDate,employmentNav/seniorityDate,employmentNav/originalStartDate,employmentNav/lastDateWorked,employmentNav/firstDateWorked,employmentNav/jobInfoNav/seqNumber,employmentNav/jobInfoNav/userId,employmentNav/jobInfoNav/startDate,employmentNav/jobInfoNav/endDate,employmentNav/jobInfoNav/event,employmentNav/jobInfoNav/emplStatus,employmentNav/jobInfoNav/emplStatusNav/externalCode,employmentNav/jobInfoNav/eventNav/externalCode"
+											"value": "personId,personIdExternal,personalInfoNav/firstName,personalInfoNav/lastName,employmentNav/startDate,employmentNav/seniorityDate,employmentNav/originalStartDate,employmentNav/jobInfoNav/seqNumber,employmentNav/jobInfoNav/userId,employmentNav/jobInfoNav/startDate,employmentNav/jobInfoNav/endDate,employmentNav/jobInfoNav/event,employmentNav/jobInfoNav/emplStatus,employmentNav/jobInfoNav/emplStatusNav/externalCode,employmentNav/jobInfoNav/eventNav/externalCode"
 										}
 									]
 								}
@@ -2323,6 +3367,70 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Read Home Address Information",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}PerAddressDEFLT?$top=10&$format=JSON&$filter=addressType+eq+'home'&$select=zipCode,city,address1,personIdExternal",
+									"host": [
+										"{{APIServerURLODataV2}}PerAddressDEFLT"
+									],
+									"query": [
+										{
+											"key": "$top",
+											"value": "10"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$filter",
+											"value": "addressType+eq+'home'"
+										},
+										{
+											"key": "$select",
+											"value": "zipCode,city,address1,personIdExternal"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Read Business Address Information from EmpJob via Navigation",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}EmpJob?$top=10&$format=JSON&$expand=locationNav/addressNavDEFLT&$select=locationNav/addressNavDEFLT/zipCode,locationNav/addressNavDEFLT/city,locationNav/addressNavDEFLT/address1,userId",
+									"host": [
+										"{{APIServerURLODataV2}}EmpJob"
+									],
+									"query": [
+										{
+											"key": "$top",
+											"value": "10"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$expand",
+											"value": "locationNav/addressNavDEFLT"
+										},
+										{
+											"key": "$select",
+											"value": "locationNav/addressNavDEFLT/zipCode,locationNav/addressNavDEFLT/city,locationNav/addressNavDEFLT/address1,userId"
+										}
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -2331,6 +3439,54 @@
 					"item": [
 						{
 							"name": "Get Location by ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}FOLocation?$filter=externalCode+eq+'1710-2009'&$format={{APIFormatOData}}",
+									"host": [
+										"{{APIServerURLODataV2}}FOLocation"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "externalCode+eq+'1710-2009'"
+										},
+										{
+											"key": "$format",
+											"value": "{{APIFormatOData}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Location by ID Copy 2",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}FOLocation?$filter=externalCode+eq+'1710-2009'&$format={{APIFormatOData}}",
+									"host": [
+										"{{APIServerURLODataV2}}FOLocation"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "externalCode+eq+'1710-2009'"
+										},
+										{
+											"key": "$format",
+											"value": "{{APIFormatOData}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Location by ID Copy",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -2674,6 +3830,221 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Compensation Information",
+					"item": [
+						{
+							"name": "Compensation and Recurring Pay Information",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}EmpCompensation?$filter=userId+eq+'{{EmployeeUserID}}'&$format=JSON&$expand=empPayCompRecurringNav,empPayCompRecurringNav/payComponentNav",
+									"host": [
+										"{{APIServerURLODataV2}}EmpCompensation"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "userId+eq+'{{EmployeeUserID}}'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$expand",
+											"value": "empPayCompRecurringNav,empPayCompRecurringNav/payComponentNav"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Global Benefits",
+					"item": [
+						{
+							"name": "Benefits",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Benefit?$format=JSON&$filter=benefitId+eq+'CAN_HEALTH'&$expand=employerContributionDetail,employeeContributionDetail,insurancePlans,insurancePlans/coverageOptions,insurancePlans/coverageOptions/coverageDetails,insurancePlans/coverageOptions/enrolleeOptionsNav",
+									"host": [
+										"{{APIServerURLODataV2}}Benefit"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$filter",
+											"value": "benefitId+eq+'CAN_HEALTH'"
+										},
+										{
+											"key": "$expand",
+											"value": "employerContributionDetail,employeeContributionDetail,insurancePlans,insurancePlans/coverageOptions,insurancePlans/coverageOptions/coverageDetails,insurancePlans/coverageOptions/enrolleeOptionsNav"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "BenefitsEnrollment",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}BenefitEnrollment?$format=JSON&$top=1&$expand=benefitInsurancePlanEnrollmentDetails&$filter=workerId+eq+'802982'",
+									"host": [
+										"{{APIServerURLODataV2}}BenefitEnrollment"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$top",
+											"value": "1"
+										},
+										{
+											"key": "$expand",
+											"value": "benefitInsurancePlanEnrollmentDetails"
+										},
+										{
+											"key": "$filter",
+											"value": "workerId+eq+'802982'"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "SAP SuccessFactors Compensation",
+			"item": [
+				{
+					"name": "Read User Reward Info of first 10 users",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Read User Reward Info of first 10 users Copy",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get Spotward",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIServerURLODataV2}}/odata/v2/SpotAward('{{EmployeeUserID}}')?$format=JSON",
+							"host": [
+								"{{APIServerURLODataV2}}"
+							],
+							"path": [
+								"odata",
+								"v2",
+								"SpotAward('{{EmployeeUserID}}')"
+							],
+							"query": [
+								{
+									"key": "$format",
+									"value": "JSON"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Spotward Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIServerURLODataV2}}/odata/v2/SpotAward('{{EmployeeUserID}}')?$format=JSON",
+							"host": [
+								"{{APIServerURLODataV2}}"
+							],
+							"path": [
+								"odata",
+								"v2",
+								"SpotAward('{{EmployeeUserID}}')"
+							],
+							"query": [
+								{
+									"key": "$format",
+									"value": "JSON"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Spot Award of Employee by Employee User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIServerURLODataV2}}SpotAward?$top=1&$filter=userId+eq+'{{EmployeeUserID}}'",
+							"host": [
+								"{{APIServerURLODataV2}}SpotAward"
+							],
+							"query": [
+								{
+									"key": "$top",
+									"value": "1"
+								},
+								{
+									"key": "$filter",
+									"value": "userId+eq+'{{EmployeeUserID}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SAP SuccessFactors Onboarding",
+			"item": [
+				{
+					"name": "Onboarding Metadata",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIServerURLODataV2}}ONB2Process/$metadata",
+							"host": [
+								"{{APIServerURLODataV2}}ONB2Process"
+							],
+							"path": [
+								"$metadata"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -2684,12 +4055,57 @@
 					"name": "JobRequisitions",
 					"item": [
 						{
+							"name": "Get Standard Recruting Template for Job Requisitions",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}getRecruitingTemplate?templateType='JOBREQ'&templateName='Standard Job Requisition'&$format=json",
+									"host": [
+										"{{APIServerURLODataV2}}getRecruitingTemplate"
+									],
+									"query": [
+										{
+											"key": "templateType",
+											"value": "'JOBREQ'"
+										},
+										{
+											"key": "templateName",
+											"value": "'Standard Job Requisition'"
+										},
+										{
+											"key": "$format",
+											"value": "json"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "JobRequisition Metadata",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobRequisition/$metadata",
+									"host": [
+										"{{APIServerURLODataV2}}JobRequisition"
+									],
+									"path": [
+										"$metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Get Job Requisition by Id",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{APIServerURLODataV2}}JobRequisition?$filter=jobReqId+eq+'{{JobReqID}}'&$format=JSON&$expand=location_obj,location_objlist,filter1,filter2,filter3,legalEntity_obj",
+									"raw": "{{APIServerURLODataV2}}JobRequisition?$filter=jobReqId+eq+'{{JobReqID}}'&$format=JSON&$expand=location_obj,location_objlist,legalEntity_obj",
 									"host": [
 										"{{APIServerURLODataV2}}JobRequisition"
 									],
@@ -2704,7 +4120,63 @@
 										},
 										{
 											"key": "$expand",
-											"value": "location_obj,location_objlist,filter1,filter2,filter3,legalEntity_obj"
+											"value": "location_obj,location_objlist,legalEntity_obj"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Job Requisition by Id Copy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobRequisition?$filter=jobReqId+eq+'3043'&$format=atom&$expand=location_obj,location_objlist,legalEntity_obj,recruiter,businessUnit_obj,filter1,filter3",
+									"host": [
+										"{{APIServerURLODataV2}}JobRequisition"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "jobReqId+eq+'3043'"
+										},
+										{
+											"key": "$format",
+											"value": "atom"
+										},
+										{
+											"key": "$expand",
+											"value": "location_obj,location_objlist,legalEntity_obj,recruiter,businessUnit_obj,filter1,filter3"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Accentrue - Get Job Requisition",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobRequisition?$filter=jobReqId+eq+'{{JobReqID}}'&$format=JSON&$expand=location_obj,location_objlist,legalEntity_obj",
+									"host": [
+										"{{APIServerURLODataV2}}JobRequisition"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "jobReqId+eq+'{{JobReqID}}'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$expand",
+											"value": "location_obj,location_objlist,legalEntity_obj"
 										}
 									]
 								}
@@ -2717,7 +4189,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{APIServerURLODataV2}}JobRequisition?$filter=templateId+eq+'8'&$format=JSON&$expand=location_obj,location_objlist,filter1,filter2,filter3&$top=10",
+									"raw": "{{APIServerURLODataV2}}JobRequisition?$filter=templateId+eq+'8'&$format=JSON&$expand=location_obj,location_objlist&$top=10",
 									"host": [
 										"{{APIServerURLODataV2}}JobRequisition"
 									],
@@ -2732,7 +4204,7 @@
 										},
 										{
 											"key": "$expand",
-											"value": "location_obj,location_objlist,filter1,filter2,filter3"
+											"value": "location_obj,location_objlist"
 										},
 										{
 											"key": "$top",
@@ -2761,7 +4233,48 @@
 							"response": []
 						},
 						{
+							"name": "Get Job Req. Template Copy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobReqTemplate_Gerald_Job_Requisition/$metadata",
+									"host": [
+										"{{APIServerURLODataV2}}JobReqTemplate_Gerald_Job_Requisition"
+									],
+									"path": [
+										"$metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Create Job Requisition",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"country\": \"Germany\",\r\n\"statusSetId\": \"1\",\r\n\"appTemplateId\": \"7\",\r\n\"templateId\": \"8\",\r\n\"jobStartDate\": \"/Date(1660565088000)/\",\r\n\"state\": {\r\n    \"id\": 11645\r\n},\r\n\"jobReqLocale\": {\r\n    \"jobTitle\": \"TEST ANDY API\",\r\n    \"locale\": \"en_US\"\r\n},\r\n\"legalEntity_obj\":{\"externalCode\": \"1710\",\"startDate\": \"/Date(-2208988800000)/\"},\r\n\"location_obj\":[{\"externalCode\": \"1710-2009\",\"startDate\": \"/Date(-2208988800000)/\"}],\r\n\r\n\"filter1\":[{\"id\": \"5616\"}],\r\n\r\n\"filter2\":[{\"id\":\"11982\"}],\r\n\r\n\"filter3\":[{\"id\": \"3979\"}],\r\n\r\n\"recruiter\": {\r\n    \"userName\": \"twalker\"\r\n},\r\n\"hiringManager\": {\r\n    \"userName\": \"twalker\"\r\n},\r\n\"originator\": {\r\n    \"userName\": \"sfadmin\"\r\n}\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobReqTemplate_Gerald_Job_Requisition/$metadata",
+									"host": [
+										"{{APIServerURLODataV2}}JobReqTemplate_Gerald_Job_Requisition"
+									],
+									"path": [
+										"$metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Job Requisition Copy",
 							"protocolProfileBehavior": {
 								"disabledSystemHeaders": {
 									"content-type": true
@@ -2778,7 +4291,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n\"country\": \"United States\",\r\n\"statusSetId\": \"1\",\r\n\"appTemplateId\": \"7\",\r\n\"templateId\": \"8\",\r\n\"jobStartDate\": \"/Date(1660565088000)/\",\r\n\"state\": {\r\n    \"id\": 11645\r\n},\r\n\"jobReqLocale\": {\r\n    \"jobTitle\": \"TEST ANDY API\",\r\n    \"locale\": \"en_US\"\r\n},\r\n\"legalEntity_obj\":{\"externalCode\": \"1710\",\"startDate\": \"/Date(-2208988800000)/\"},\r\n\"location_obj\":[{\"externalCode\": \"1710-2009\",\"startDate\": \"/Date(-2208988800000)/\"}],\r\n\r\n\"filter1\":[{\"id\": \"5616\"}],\r\n\r\n\"filter2\":[{\"id\":\"11982\"}],\r\n\r\n\"filter3\":[{\"id\": \"3979\"}],\r\n\r\n\"recruiter\": {\r\n    \"userName\": \"twalker\"\r\n},\r\n\"hiringManager\": {\r\n    \"userName\": \"twalker\"\r\n},\r\n\"originator\": {\r\n    \"userName\": \"sfadmin\"\r\n}\r\n}\r\n"
+									"raw": "{\r\n\"country\": \"United States\",\r\n\"statusSetId\": \"1\",\r\n\"appTemplateId\": \"21\",\r\n\"templateId\": \"23\",\r\n\"jobStartDate\": \"/Date(1660565088000)/\",\r\n\"positionNumber\": \"Position900042\",\r\n\"jobCode\":\"MC_Atech\",\r\n\"numberOpenings\": \"1\",\r\n\"currency\": \"USD\",\r\n\"jobGrade\": \"Salary Grade 3\",\r\n\"jobReqLocale\": {\r\n    \"jobTitle\": \"TEST ANDY API\",\r\n    \"jobDescription\": \"test\",\r\n    \"externalJobDescription\": \"test\",\r\n    \"locale\": \"en_US\"\r\n},\r\n\"legalEntity_obj\":{\"externalCode\": \"1100\",\"startDate\": \"/Date(-2208988800000)/\"},\r\n\"location_obj\":[{\"externalCode\": \"MC_UK_LEE2\",\"startDate\": \"/Date(-2208988800000)/\"}],\r\n\"businessUnit_obj\":{\"externalCode\": \"MC_AVIA\",\"startDate\": \"/Date(-2208988800000)/\"},\r\n\"division_obj\":{\"externalCode\": \"MC_AVP\",\"startDate\": \"/Date(-2208988800000)/\"},\r\n\"department_obj\":{\"externalCode\": \"MC_US_AVP\",\"startDate\": \"/Date(-2208988800000)/\"},\r\n\"costCenter_obj\":{\"externalCode\": \"MC_100016\",\"startDate\": \"/Date(-2208988800000)/\"},\r\n\r\n\r\n\"filter1\":[{\"id\": \"4433\"}],\r\n\r\n\r\n\r\n\"filter3\":[{\"id\": \"5646\"}],\r\n\"filter4\":[{\"id\": \"1714\"}],\r\n\r\n\r\n\"recruiter\": {\r\n    \"userName\": \"igrant\"\r\n},\r\n\"hiringManager\": {\r\n    \"userName\": \"twalker\"\r\n},\r\n\"originator\": {\r\n    \"userName\": \"sfadmin\"\r\n}\r\n}\r\n"
 								},
 								"url": {
 									"raw": "{{APIServerURLODataV2}}JobRequisition?$format=json",
@@ -2792,6 +4305,14 @@
 										}
 									]
 								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Request",
+							"request": {
+								"method": "GET",
+								"header": []
 							},
 							"response": []
 						}
@@ -2901,6 +4422,884 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Job Application",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobApplication?$top=11&$format=JSON&$select=applicationId",
+									"host": [
+										"{{APIServerURLODataV2}}JobApplication"
+									],
+									"query": [
+										{
+											"key": "$top",
+											"value": "11"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$select",
+											"value": "applicationId"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Candidate",
+					"item": [
+						{
+							"name": "Candidate Metadata",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Candidate,CandidateLight,Attachment/$metadata",
+									"host": [
+										"{{APIServerURLODataV2}}Candidate,CandidateLight,Attachment"
+									],
+									"path": [
+										"$metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Standard Recruting Template for Job Requisitions Copy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}getRecruitingTemplate?templateType='CANDIDATE'&templateName='NXGEN Candidate Profile Template'&$format=json",
+									"host": [
+										"{{APIServerURLODataV2}}getRecruitingTemplate"
+									],
+									"query": [
+										{
+											"key": "templateType",
+											"value": "'CANDIDATE'"
+										},
+										{
+											"key": "templateName",
+											"value": "'NXGEN Candidate Profile Template'"
+										},
+										{
+											"key": "$format",
+											"value": "json"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a Candidate Light",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"CandidateDefaultID\", jsonData.d.candidateId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n\"country\": \"United States\", \r\n\"firstName\": \"Kai\", \r\n\"lastName\": \"Lopez\",\r\n\"primaryEmail\": \"{{$guid}}@thisgmaildoesnotexist.zz\" \r\n} ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}CandidateLight?$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}CandidateLight"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a Candidate with a Resume",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"CandidateForwardedID\", jsonData.d.candidateId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n\"country\": \"United States\", \r\n\"firstName\": \"Hans\", \r\n\"lastName\": \"Mayer\", \r\n\"primaryEmail\": \"{{$guid}}@gmail.com\",\r\n\"contactEmail\": \"{{$guid}}@gmail.com\", \r\n\"cellPhone\": \"+1-415-222-1212\",\r\n\"resume\": {\r\n    \"fileName\": \"image.png\",\r\n    \"ownerIdType\": \"CANDIDATE_ID\",\r\n    \"moduleCategory\": \"RESUME\",\r\n    \"module\": \"RECRUITING\",\r\n    \"viewable\": true,\r\n    \"fileContent\": \"VGVzdDEyMw\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Candidate?$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}Candidate"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update a CandidateLight",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n\"__metadata\": {\r\n     \"uri\": \"https://apisalesdemo8.successfactors.com/odata/v2/CandidateLight\",\r\n     \"type\": \"SFOData.CandidateLight\"\r\n                },\r\n\"candidateId\": \"{{CandidateDefaultID}}\",\r\n\"country\": \"United States\", \r\n\"city\": \"New York\",\r\n\"firstName\": \"Hans\", \r\n\"lastName\": \"Mayer\", \r\n\"contactEmail\": \"{{$guid}}@gmail.com\", \r\n\"cellPhone\": \"+1-415-222-1212\"\r\n} ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}CandidateLight/upsert",
+									"host": [
+										"{{APIServerURLODataV2}}CandidateLight"
+									],
+									"path": [
+										"upsert"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Bulk update of candidates",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n{ \r\n\"__metadata\": {\r\n     \"uri\": \"https://apisalesdemo8.successfactors.com/odata/v2/CandidateLight\",\r\n     \"type\": \"SFOData.CandidateLight\"\r\n                },\r\n\"candidateId\": \"{{CandidateDefaultID}}\",\r\n\"country\": \"United States\", \r\n\"firstName\": \"Hans\", \r\n\"lastName\": \"Mayer\", \r\n\"contactEmail\": \"{{$guid}}@gmail.com\", \r\n\"cellPhone\": \"+1-415-222-1212\"\r\n},\r\n{\r\n\"__metadata\": {\r\n     \"uri\": \"https://apisalesdemo8.successfactors.com/odata/v2/CandidateLight\",\r\n     \"type\": \"SFOData.CandidateLight\"\r\n                },\r\n\r\n\"candidateId\": \"{{CandidateForwardedID}}\",\r\n\"country\": \"United States\", \r\n\"firstName\": \"George\", \r\n\"lastName\": \"Lopez\", \r\n\"contactEmail\": \"{{$guid}}@gmail.com\", \r\n\"cellPhone\": \"+1-415-111-1212\"\r\n} \r\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}CandidateLight/upsert",
+									"host": [
+										"{{APIServerURLODataV2}}CandidateLight"
+									],
+									"path": [
+										"upsert"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Candidates by Last Name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"CandidateID\", jsonData.d.results[0].candidateId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Candidate?$filter=lastName+eq+'Mayer'&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}Candidate"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "lastName+eq+'Mayer'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Count Candidates",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Candidate/$count",
+									"host": [
+										"{{APIServerURLODataV2}}Candidate"
+									],
+									"path": [
+										"$count"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Created Candidates by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"CandidateID\", jsonData.d.results[0].candidateId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Candidate?$filter=candidateId+eq+'{{CandidateDefaultID}}'+or+candidateId+eq+'{{CandidateForwardedID}}'&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}Candidate"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "candidateId+eq+'{{CandidateDefaultID}}'+or+candidateId+eq+'{{CandidateForwardedID}}'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Created Candidates by ID Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"CandidateID\", jsonData.d.results[0].candidateId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Candidate?$filter=candidateId+eq+'{{CandidateDefaultID}}'+or+candidateId+eq+'{{CandidateForwardedID}}'&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}Candidate"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "candidateId+eq+'{{CandidateDefaultID}}'+or+candidateId+eq+'{{CandidateForwardedID}}'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Candidates using paging",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"CandidateID\", jsonData.d.results[0].candidateId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}Candidate?$top=800&$skip=800&$orderBy=candidateId&$select=candidateId,firstName,lastModifiedDateTime,lastName,primaryEmail&$format=atom",
+									"host": [
+										"{{APIServerURLODataV2}}Candidate"
+									],
+									"query": [
+										{
+											"key": "$top",
+											"value": "800"
+										},
+										{
+											"key": "$skip",
+											"value": "800"
+										},
+										{
+											"key": "$orderBy",
+											"value": "candidateId"
+										},
+										{
+											"key": "$select",
+											"value": "candidateId,firstName,lastModifiedDateTime,lastName,primaryEmail"
+										},
+										{
+											"key": "$format",
+											"value": "atom"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get open Job Requisition and store it",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"JobReqID\", jsonData.d.results[0].jobReqId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobRequisition?$top=1&$filter=internalStatus+eq+'approved'&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}JobRequisition"
+									],
+									"query": [
+										{
+											"key": "$top",
+											"value": "1"
+										},
+										{
+											"key": "$filter",
+											"value": "internalStatus+eq+'approved'"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Default a candidate to a Job Requisition",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n{ \r\n    \"candidateId\": \"{{CandidateDefaultID}}\", \r\n    \"jobReqId\": \"{{JobReqID}}\", \r\n    \"status\": \"Default\" \r\n} ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobReqFwdCandidates?$format=json",
+									"host": [
+										"{{APIServerURLODataV2}}JobReqFwdCandidates"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "json"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Forward a candidate to a Job Requisition Copy 2",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n{ \r\n    \"candidateId\": \"{{CandidateForwardedID}}\", \r\n    \"jobReqId\": \"{{JobReqID}}\", \r\n    \"status\": \"Forwarded\" \r\n} ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobReqFwdCandidates?$format=json",
+									"host": [
+										"{{APIServerURLODataV2}}JobReqFwdCandidates"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "json"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Invite a candidate to apply to a Job Requisition",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n{ \r\n    \"candidateId\": \"{{CandidateID}}\", \r\n    \"jobReqId\": \"{{JobReqID}}\", \r\n    \"status\": \"Default\" \r\n} ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}inviteToApply?jobReqId={{JobReqID}}L&candidateIds='{{CandidateForwardedID}}'",
+									"host": [
+										"{{APIServerURLODataV2}}inviteToApply"
+									],
+									"query": [
+										{
+											"key": "jobReqId",
+											"value": "{{JobReqID}}L"
+										},
+										{
+											"key": "candidateIds",
+											"value": "'{{CandidateForwardedID}}'"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "BackgroundCheck",
+					"item": [
+						{
+							"name": "GetBackgroundCheckRequest",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobApplicationBackgroundCheckRequest?$format=json&filter=requestId+eq+'121'",
+									"host": [
+										"{{APIServerURLODataV2}}JobApplicationBackgroundCheckRequest"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "json"
+										},
+										{
+											"key": "filter",
+											"value": "requestId+eq+'121'"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBackgroundCheckRequest Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"__metadata\": {\r\n\t\t\"uri\": \"JobApplicationBackgroundCheckRequest\",\r\n\t\t\"type\": \"SFOData.JobApplicationBackgroundCheckRequest\"\r\n\t},\r\n\t\"vendorCode\": \"Gerald\",\r\n\t\"vendorOrderNo\": \"Gerald_12112019_87654\",\r\n\t\"orderStatus\": \"OK\",\r\n\t\"applicationId\": \"2822\",\r\n\t\"responseCode\": \"200\",\r\n\t\"responseDetail\": \"Order received and acknowledged.\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}upsert",
+									"host": [
+										"{{APIServerURLODataV2}}upsert"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "JobApplicationInterview",
+					"item": [
+						{
+							"name": "Get Metadata for JobApplicationInterview",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobApplicationInterview,InterviewOverallAssessment,User/$metadata",
+									"host": [
+										"{{APIServerURLODataV2}}JobApplicationInterview,InterviewOverallAssessment,User"
+									],
+									"path": [
+										"$metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Read first 10 JobApplicationInterviews",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobApplicationInterview?&$format=JSON&$top=10&$expand=interviewNotes,interviewOverallAssessment,interviewer&select=interviewer/displayName",
+									"host": [
+										"{{APIServerURLODataV2}}JobApplicationInterview"
+									],
+									"query": [
+										{
+											"key": null,
+											"value": null
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$top",
+											"value": "10"
+										},
+										{
+											"key": "$expand",
+											"value": "interviewNotes,interviewOverallAssessment,interviewer"
+										},
+										{
+											"key": "select",
+											"value": "interviewer/displayName"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Read JobApplicationInterviews by Job Requisition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"postman.setEnvironmentVariable(\"ApplicationInterviewId\",jsonData.d.results[0].applicationInterviewId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobApplicationInterview?&$format=JSON&$top=10&$filter=jobRequisition/jobReqId+eq+'2862'&$expand=interviewer&$select=applicationInterviewId,startDate,endDate,applicationId,status,interviewer/displayName,resume,jobApplication,jobRequisition,interviewOverallAssessment,interviewNotes",
+									"host": [
+										"{{APIServerURLODataV2}}JobApplicationInterview"
+									],
+									"query": [
+										{
+											"key": null,
+											"value": null
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$top",
+											"value": "10"
+										},
+										{
+											"key": "$filter",
+											"value": "jobRequisition/jobReqId+eq+'2862'"
+										},
+										{
+											"key": "$expand",
+											"value": "interviewer"
+										},
+										{
+											"key": "$select",
+											"value": "applicationInterviewId,startDate,endDate,applicationId,status,interviewer/displayName,resume,jobApplication,jobRequisition,interviewOverallAssessment,interviewNotes"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create JobApplicationInterview",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse( responseBody );\r",
+											"postman.setEnvironmentVariable(\"ApplicationInterviewId\",jsonData.d.results[0].applicationInterviewId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobApplicationInterview?&$format=JSON&$top=10&$filter=jobRequisition/jobReqId+eq+'2862'&$expand=interviewer&$select=applicationInterviewId,startDate,endDate,applicationId,status,interviewer/displayName,resume,jobApplication,jobRequisition,interviewOverallAssessment,interviewNotes",
+									"host": [
+										"{{APIServerURLODataV2}}JobApplicationInterview"
+									],
+									"query": [
+										{
+											"key": null,
+											"value": null
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										},
+										{
+											"key": "$top",
+											"value": "10"
+										},
+										{
+											"key": "$filter",
+											"value": "jobRequisition/jobReqId+eq+'2862'"
+										},
+										{
+											"key": "$expand",
+											"value": "interviewer"
+										},
+										{
+											"key": "$select",
+											"value": "applicationInterviewId,startDate,endDate,applicationId,status,interviewer/displayName,resume,jobApplication,jobRequisition,interviewOverallAssessment,interviewNotes"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete JobApplicationInterviews by ApplicationInterviewId",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobApplicationInterview(applicationInterviewId={{ApplicationInterviewId}})",
+									"host": [
+										"{{APIServerURLODataV2}}JobApplicationInterview(applicationInterviewId={{ApplicationInterviewId}})"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Individual Assessment",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}InterviewIndividualAssessment?$top=10&$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}InterviewIndividualAssessment"
+									],
+									"query": [
+										{
+											"key": "$top",
+											"value": "10"
+										},
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Read JobApplicationAudit",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}JobApplicationAudit?$top=200",
+									"host": [
+										"{{APIServerURLODataV2}}JobApplicationAudit"
+									],
+									"query": [
+										{
+											"key": "$top",
+											"value": "200"
+										}
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				}
@@ -2992,6 +5391,24 @@
 			"item": []
 		},
 		{
+			"name": "SAP SuccessFactors Time Tracking",
+			"item": [
+				{
+					"name": "Clock in Cloud out",
+					"item": [
+						{
+							"name": "Exporting time events",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
 			"name": "OData Basics",
 			"item": [
 				{
@@ -3042,6 +5459,26 @@
 							"response": []
 						},
 						{
+							"name": "Search User by lastname starting with \"Am\" Copy 2",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{APIServerURLODataV2}}User?$filter=startswith(lastName,'Am')",
+									"host": [
+										"{{APIServerURLODataV2}}User"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "startswith(lastName,'Am')"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Get User filtered by external Person ID (Deep Filter)",
 							"request": {
 								"method": "GET",
@@ -3068,6 +5505,29 @@
 					"item": [
 						{
 							"name": "Read one User using Basic Authentication (Deprecated)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"postman.setEnvironmentVariable(\"SAMLAssertion\", responseBody);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
 								"auth": {
 									"type": "basic",
@@ -3085,7 +5545,18 @@
 									]
 								},
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": []
+								},
 								"url": {
 									"raw": "{{APIServerURLODataV2}}User?$top=1&$format=JSON&$select=firstName,lastName,userId,username",
 									"host": [
@@ -3153,7 +5624,66 @@
 					"name": "Batching",
 					"item": [
 						{
-							"name": "OData Request with virutal URL",
+							"name": "Create an employee using $batch",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"User\", \"adiiii\");",
+											"pm.environment.set(\"dateOfBirth\", \"/Date(112233600000)/\");",
+											"pm.environment.set(\"userId\", \"adiii\");",
+											"pm.environment.set(\"username2\", \"adit\");",
+											"pm.environment.set(\"firstName\", \"aditya\");",
+											"pm.environment.set(\"lastName\", \"shelar\");",
+											"",
+											"pm.environment.set(\"personIdExternal\", \"ashelar\");",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"content-type": true
+								}
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Host",
+										"value": "apisalesdemo4.successfactors.com",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "multipart/mixed; boundary=batch_36522ad7-fc75-4b56-8c71-56071383e77b",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "--batch_36522ad7-fc75-4b56-8c71-56071383e77b\r\nContent-Type: multipart/mixed; boundary=changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\nContent-Transfer-Encoding: binary\r\nContent-Type: application/http\r\n\r\nPOST upsert HTTP/1.1\r\nContent-Type: application/json;type=entry\r\n\r\n{\r\n    \"__metadata\": {\r\n        \"uri\": \"User('{{NewEmployeeUserID}}')\",\r\n        \"type\": \"SFOData.User\"\r\n    },\r\n    \"username\" : \"{{NewEmployeeUserName}}\",\r\n    \"userId\" : \"{{NewEmployeeUserID}}\",\r\n    \"status\" : \"Active\"\r\n}\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\nContent-Transfer-Encoding: binary\r\nContent-Type: application/http\r\n\r\nPOST upsert HTTP/1.1\r\nContent-Type: application/json;type=entry\r\n\r\n{\r\n    \"__metadata\": {\r\n        \"uri\": \"PerPerson\"\r\n    },\r\n    \"personIdExternal\" : \"{{NewEmployeePersonIDExternal}}\",\r\n    \"userId\" : \"{{NewEmployeeUserID}}\",\r\n    \"dateOfBirth\" : \"/Date(112233600000)/\",\r\n    \"countryOfBirth\" : \"USA\"\r\n}\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\nContent-Transfer-Encoding: binary\r\nContent-Type: application/http\r\n\r\nPOST upsert HTTP/1.1\r\nContent-Type: application/json;type=entry\r\n\r\n{\r\n    \"__metadata\": {\r\n        \"uri\": \"EmpEmployment\"\r\n    },\r\n    \"startDate\":\"/Date(1388534400000)/\",\r\n    \"personIdExternal\": \"{{NewEmployeePersonIDExternal}}\",\r\n    \"userId\": \"{{NewEmployeeUserID}}\",\r\n    \"firstDateWorked\" : \"/Date(1388534400000)/\"\r\n}\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\nContent-Transfer-Encoding: binary\r\nContent-Type: application/http\r\n\r\nPOST upsert HTTP/1.1\r\nContent-Type: application/json;type=entry\r\n\r\n{\r\n    \"__metadata\": {\r\n        \"uri\": \"EmpJob\"\r\n    },\r\n    \"eventReason\" : \"HIRNEW\",\r\n    \"startDate\" : \"/Date(1388534400000)/\",\r\n    \"jobCode\" : \"50029122\",\r\n    \"userId\" : \"{{NewEmployeeUserID}}\",\r\n    \"company\" : \"1710\",\r\n\t\"businessUnit\" : \"CORP\",\r\n\t\"managerId\" : \"108736\",\r\n\t\"location\" : \"1710-2003\",\r\n\t\"position\" : \"50023041\",\r\n\t\"payScaleArea\" : \"USA/US2\",\r\n\t\"payScaleType\" : \"USA/US1\",\r\n\t\"department\": \"50150001\",\r\n\t\"costCenter\": \"US10_M6\",\r\n\t\"timezone\" : \"America/New_York\"\r\n}\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\nContent-Transfer-Encoding: binary\r\nContent-Type: application/http\r\n\r\nPOST upsert HTTP/1.1\r\nContent-Type: application/json;type=entry\r\n\r\n{\r\n    \"__metadata\": {\r\n        \"uri\": \"PerPersonal\"\r\n    },\r\n    \"personIdExternal\" : \"{{personIdExternal}}\",\r\n    \"gender\" : \"M\",\r\n    \"firstName\" : \"{{NewEmployeeFirstName}}\",\r\n    \"lastName\" : \"{{NewEmployeeLastName}}\",\r\n    \"nationality\": \"USA\",\r\n    \"nativePreferredLang\": \"10223\"\r\n}\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621--\r\n\r\n--batch_36522ad7-fc75-4b56-8c71-56071383e77b--"
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}$batch?$format=atom",
+									"host": [
+										"{{APIServerURLODataV2}}$batch"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "atom"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "OData Request with virtual URL",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -3180,7 +5710,7 @@
 							"response": []
 						},
 						{
-							"name": "OData Request with virutal URL Copy",
+							"name": "OData Request with virtual URL Copy",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -3201,79 +5731,180 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Batching and referencing previous request",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"content-type": true
+								}
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/mixed; boundary=batch_36522ad7-fc75-4b56-8c71-56071383e77b",
+										"type": "default"
+									},
+									{
+										"key": "Host",
+										"value": "{{APIServerURL}}",
+										"type": "default"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "--batch_36522ad7-fc75-4b56-8c71-56071383e77b\r\nContent-Type: multipart/mixed; boundary=changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\nContent-Transfer-Encoding: binary\r\nContent-Type: application/http\r\n\r\nGET EmpJob(seqNumber=2L,startDate=datetime'2017-01-01T00:00:00',userId='802987') HTTP/1.1\r\nContent-Type: application/json;type=entry\r\n\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\nContent-Transfer-Encoding: binary\r\nContent-Type: application/http\r\n\r\nGET PicklistLabel?$filter=optionId+eq+$1/emplStatus  HTTP/1.1\r\n\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621--\r\n\r\n--batch_36522ad7-fc75-4b56-8c71-56071383e77b--"
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}$batch?$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}$batch"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Batching and referencing previous request Copy",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"content-type": true
+								}
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/mixed; boundary=batch_36522ad7-fc75-4b56-8c71-56071383e77b",
+										"type": "default"
+									},
+									{
+										"key": "Host",
+										"value": "api68sales.successfactors.com",
+										"type": "default"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "--batch_36522ad7-fc75-4b56-8c71-56071383e77b\r\nContent-Transfer-Encoding: binary\r\nContent-Type: application/http\r\nContent-ID: 1\r\n\r\nGET EmpJob(seqNumber=2L,startDate=datetime'2017-01-01T00:00:00',userId='802987') HTTP/1.1\r\n\r\n\r\n--batch_36522ad7-fc75-4b56-8c71-56071383e77b\r\nContent-Transfer-Encoding: binary\r\nContent-Type: application/http\r\n\r\nGET $1/emplStatusNav/picklistLabels?$top=1  HTTP/1.1\r\n\r\n\r\n--batch_36522ad7-fc75-4b56-8c71-56071383e77b--"
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}$batch?$format=JSON",
+									"host": [
+										"{{APIServerURLODataV2}}$batch"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "JSON"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Batching and referencing previous request Copy 2",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"content-type": true
+								}
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/mixed; boundary=batch_36522ad7-fc75-4b56-8c71-56071383e77b",
+										"type": "default"
+									},
+									{
+										"key": "Host",
+										"value": "api68sales.successfactors.com",
+										"type": "default"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "--batch_36522ad7-fc75-4b56-8c71-56071383e77b\r\nContent-Type: multipart/mixed; boundary=changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621\r\nContent-Transfer-Encoding: binary\r\nContent-Type: application/http\r\n\r\nPOST upsert HTTP/1.1\r\nContent-Type: application/json;type=entry\r\n\r\n{\r\n\r\n}\r\n\r\n--changeset_77162fcd-b8da-41ac-a9f8-9357efbbd621--\r\n\r\n--batch_36522ad7-fc75-4b56-8c71-56071383e77b--"
+								},
+								"url": {
+									"raw": "{{APIServerURLODataV2}}$batch?$format=atom",
+									"host": [
+										"{{APIServerURLODataV2}}$batch"
+									],
+									"query": [
+										{
+											"key": "$format",
+											"value": "atom"
+										}
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				}
 			]
 		},
 		{
-			"name": "generate SAML assertion (development only not to be used in production!)",
+			"name": "generate SAML assertion with User ID (development only not to be used in production!)",
 			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"postman.setEnvironmentVariable(\"SAMLAssertion\", responseBody);"
+							"postman.setEnvironmentVariable(\"SAMLAssertion\",responseBody);"
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "noauth"
-				},
 				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/x-www-form-urlencoded",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "client_id",
-							"value": "{{OAuthClientID}}",
-							"type": "text"
-						},
-						{
 							"key": "private_key",
 							"value": "{{OAuthPrivateKey}}",
-							"type": "text"
+							"type": "default"
 						},
 						{
 							"key": "user_id",
-							"value": "{{APIUserID}}",
-							"type": "text"
+							"value": "{{APIUserName}}",
+							"type": "default"
 						},
 						{
 							"key": "token_url",
 							"value": "{{OAuthTokenURL}}",
-							"type": "text"
+							"type": "default"
 						},
 						{
-							"key": "user_id",
-							"value": "222",
-							"type": "default",
-							"disabled": true
+							"key": "client_id",
+							"value": "{{OAuthClientID}}",
+							"type": "default"
 						},
 						{
 							"key": "use_username",
 							"value": "true",
-							"type": "default",
-							"disabled": true
+							"description": "if set to true the parameter user_id has to be filled with a username",
+							"type": "default"
+						},
+						{
+							"key": "use_email",
+							"value": "false",
+							"type": "default"
 						}
 					]
 				},
@@ -3347,6 +5978,11 @@
 							"key": "assertion",
 							"value": "{{SAMLAssertion}}",
 							"type": "text"
+						},
+						{
+							"key": "new_token",
+							"value": "true",
+							"type": "default"
 						}
 					]
 				},
@@ -3365,11 +6001,16 @@
 		}
 	],
 	"auth": {
-		"type": "bearer",
-		"bearer": [
+		"type": "basic",
+		"basic": [
 			{
-				"key": "token",
-				"value": "{{APIAccessToken}}",
+				"key": "username",
+				"value": "{{APIUserName}}@{{CompanyID}}",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "{{APIUserPassword}}",
 				"type": "string"
 			}
 		]
@@ -3392,6 +6033,18 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "APIAccessToken",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "SAMLAssertion",
+			"value": "",
+			"type": "default"
 		}
 	]
 }
